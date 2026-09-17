@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { getWeakTopics, getRecommendedTopics } from "@/lib/quiz/weakTopics";
 
 export const dynamic = "force-dynamic";
 
@@ -11,8 +12,6 @@ function greeting() {
   if (hour < 18) return "Good afternoon.";
   return "Good evening.";
 }
-
-const RECOMMENDED_TOPIC_NAMES = ["Teaching Profession", "Curriculum Development"];
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -26,6 +25,17 @@ export default async function DashboardPage() {
     .eq("user_id", user?.id ?? "")
     .order("created_at", { ascending: false })
     .limit(5);
+
+  const { data: recentQuizzes } = await supabase
+    .from("quiz_attempts")
+    .select("id, score, total_questions, created_at, resources(title), topics(name)")
+    .eq("user_id", user?.id ?? "")
+    .not("score", "is", null)
+    .order("created_at", { ascending: false })
+    .limit(3);
+
+  const weakTopics = user ? await getWeakTopics(user.id, 3) : [];
+  const recommended = user ? await getRecommendedTopics(user.id, 2) : [];
 
   return (
     <div className="space-y-8">
@@ -75,9 +85,50 @@ export default async function DashboardPage() {
       </section>
 
       <section className="space-y-3">
+        <h2 className="text-sm font-medium text-neutral-500">Recent Quizzes</h2>
+        {recentQuizzes && recentQuizzes.length > 0 ? (
+          <div className="space-y-2">
+            {recentQuizzes.map((q) => {
+              const resource = Array.isArray(q.resources) ? q.resources[0] : q.resources;
+              const topic = Array.isArray(q.topics) ? q.topics[0] : q.topics;
+              const label = resource?.title ?? topic?.name ?? "Quiz";
+              return (
+                <Link key={q.id} href={`/quiz/${q.id}`}>
+                  <Card className="p-3">
+                    <div className="font-medium">{label}</div>
+                    <div className="text-sm text-neutral-500">
+                      {q.score}/{q.total_questions} · {new Date(q.created_at).toLocaleDateString()}
+                    </div>
+                  </Card>
+                </Link>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="text-sm text-neutral-400">No quizzes taken yet.</p>
+        )}
+      </section>
+
+      {weakTopics.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="text-sm font-medium text-neutral-500">Weak Areas</h2>
+          <div className="flex flex-wrap gap-2">
+            {weakTopics.map((t) => (
+              <span
+                key={t.topicId}
+                className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-sm text-amber-800"
+              >
+                {t.topicName} ({Math.round(t.accuracy * 100)}%)
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section className="space-y-3">
         <h2 className="text-sm font-medium text-neutral-500">Recommended for You</h2>
         <div className="flex flex-wrap gap-2">
-          {RECOMMENDED_TOPIC_NAMES.map((name) => (
+          {recommended.map((name) => (
             <span key={name} className="rounded-full border border-neutral-200 px-3 py-1.5 text-sm">
               {name}
             </span>

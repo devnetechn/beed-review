@@ -115,3 +115,93 @@ export async function generateQuiz(
     })),
   };
 }
+
+function buildTopicQuizUserPrompt(
+  topicName: string,
+  subjectName: string,
+  contextLines: string[]
+): string {
+  const context =
+    contextLines.length > 0
+      ? contextLines.join("\n")
+      : "(no linked resources yet — generate from general BEEd/LET curriculum knowledge of this topic)";
+  return `Topic: "${topicName}" (Subject: ${subjectName})\n\nRelated resources:\n${context}\n\nGenerate the questions for this topic.`;
+}
+
+export async function generateTopicQuiz(
+  topicId: string,
+  userId: string,
+  count: 5 | 10 | 20 | 50,
+  difficulty: "easy" | "medium" | "hard"
+): Promise<{ attemptId: string; totalQuestions: number }> {
+  const supabase = createServiceClient();
+
+  const { data: topic } = await supabase
+    .from("topics")
+    .select("name, subjects(name)")
+    .eq("id", topicId)
+    .single();
+
+  if (!topic) throw new Error("Topic not found");
+  const subject = Array.isArray(topic.subjects) ? topic.subjects[0] : topic.subjects;
+
+  const { data: linkedResources } = await supabase
+    .from("resource_topics")
+    .select("resources(title, description)")
+    .eq("topic_id", topicId)
+    .limit(3);
+
+  const contextLines = (linkedResources ?? [])
+    .map((r) => (Array.isArray(r.resources) ? r.resources[0] : r.resources))
+    .filter((r): r is NonNullable<typeof r> => !!r)
+    .map((r) => `- ${r.title}: ${r.description ?? ""}`);
+
+  const response = await getOpenAIClient().responses.create({
+    model: process.env.OPENAI_MODEL!,
+    input: [
+      { role: "system", content: buildQuizSystemPrompt(count, difficulty) },
+      {
+        role: "user",
+        content: buildTopicQuizUserPrompt(topic.name, subject?.name ?? "General", contextLines),
+      },
+    ],
+    text: {
+      format: {
+        type: "json_schema",
+        name: "quiz_questions",
+        schema: QUIZ_JSON_SCHEMA,
+        strict: true,
+      },
+    },
+  });
+
+  const parsed = QuizResponseSchema.parse(JSON.parse(response.output_text));
+
+  const { data: attempt, error: attemptError } = await supabase
+    .from("quiz_attempts")
+    .insert({
+      user_id: userId,
+      topic_id: topicId,
+      difficulty,
+      total_questions: parsed.questions.length,
+    })
+    .select("id")
+    .single();
+
+  if (attemptError || !attempt) throw new Error("Failed to create quiz attempt");
+
+  const { error: questionsError } = await supabase.from("quiz_questions").insert(
+    parsed.questions.map((q) => ({
+      quiz_attempt_id: attempt.id,
+      question_text: q.question,
+      choices: q.choices,
+      correct_answer: q.correct_answer,
+      explanation: q.explanation,
+      is_ai_generated: true,
+    }))
+  );
+
+  if (questionsError) throw new Error("Failed to save quiz questions");
+
+  return { attemptId: attempt.id, totalQuestions: parsed.questions.length };
+}
