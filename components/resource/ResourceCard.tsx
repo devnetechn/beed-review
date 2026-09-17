@@ -3,6 +3,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LicenseBadge } from "@/components/resource/LicenseBadge";
+import { StudyActions } from "./StudyActions";
 import type { ResourceHit } from "@/lib/search/searchResources";
 
 export function ResourceCard({
@@ -33,7 +34,7 @@ export function ResourceCard({
       <div className="text-xs text-neutral-400">
         {resource.source ?? "Unknown source"} · {resource.resource_type}
       </div>
-      <div className="flex gap-2 pt-1">
+      <div className="flex flex-wrap gap-2 pt-1">
         <a href={resource.original_url} target="_blank" rel="noopener noreferrer">
           <Button size="sm" variant="outline">
             Open
@@ -46,6 +47,7 @@ export function ResourceCard({
         >
           {saved ? "Saved" : "Save"}
         </Button>
+        <StudyActions resourceId={resource.id} />
       </div>
     </Card>
   );
