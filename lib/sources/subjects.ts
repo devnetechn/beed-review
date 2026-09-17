@@ -1,0 +1,15 @@
+export const SUBJECTS = [
+  { slug: "assessment-of-learning", name: "Assessment of Learning" },
+  { slug: "child-and-adolescent-development", name: "Child and Adolescent Development" },
+  { slug: "principles-of-teaching", name: "Principles of Teaching" },
+  { slug: "curriculum-development", name: "Curriculum Development" },
+  { slug: "educational-technology", name: "Educational Technology" },
+  { slug: "teaching-profession", name: "Teaching Profession" },
+  { slug: "facilitating-learning", name: "Facilitating Learning" },
+  { slug: "general-education", name: "General Education" },
+  { slug: "english", name: "English" },
+  { slug: "mathematics", name: "Mathematics" },
+  { slug: "science", name: "Science" },
+  { slug: "filipino", name: "Filipino" },
+  { slug: "social-studies", name: "Social Studies" },
+] as const;
