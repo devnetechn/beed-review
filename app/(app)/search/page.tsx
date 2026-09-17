@@ -2,10 +2,12 @@
 
 import { useState, useTransition } from "react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { ResourceCard } from "@/components/resource/ResourceCard";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ErrorBanner } from "@/components/common/ErrorBanner";
 import { toggleSaveResource } from "@/lib/library/actions";
+import { researchTopicAction } from "@/lib/research/actions";
 import type { ResourceHit, SubjectHit, TopicHit } from "@/lib/search/searchResources";
 
 export default function SearchPage() {
@@ -15,12 +17,17 @@ export default function SearchPage() {
     topics: TopicHit[];
     resources: ResourceHit[];
   } | null>(null);
+  const [aiResults, setAiResults] = useState<ResourceHit[] | null>(null);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [isResearching, setIsResearching] = useState(false);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   async function runSearch(q: string) {
     setError(null);
+    setAiResults(null);
+    setAiError(null);
     try {
       const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
       if (!res.ok) throw new Error("Search failed. Try again.");
@@ -48,6 +55,19 @@ export default function SearchPage() {
     });
   }
 
+  async function handleResearch() {
+    if (!query.trim()) return;
+    setIsResearching(true);
+    setAiError(null);
+    const outcome = await researchTopicAction(query);
+    setIsResearching(false);
+    if ("error" in outcome) {
+      setAiError(outcome.error);
+      return;
+    }
+    setAiResults(outcome.resources);
+  }
+
   return (
     <div className="space-y-6">
       <form onSubmit={handleSubmit} className="space-y-2">
@@ -72,17 +92,48 @@ export default function SearchPage() {
           results.topics.length === 0 ? (
             <EmptyState message="No matches yet. Try a different subject or topic name." />
           ) : (
-            <>
-              {results.resources.map((resource) => (
-                <ResourceCard
-                  key={resource.id}
-                  resource={resource}
-                  saved={savedIds.has(resource.id)}
-                  onToggleSave={handleToggleSave}
-                />
-              ))}
-            </>
+            results.resources.map((resource) => (
+              <ResourceCard
+                key={resource.id}
+                resource={resource}
+                saved={savedIds.has(resource.id)}
+                onToggleSave={handleToggleSave}
+              />
+            ))
           )}
+
+          <div className="space-y-3 border-t border-neutral-200 pt-4">
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={handleResearch}
+              disabled={isResearching || !query.trim()}
+            >
+              {isResearching
+                ? "Researching… this can take up to 30 seconds"
+                : "Research this topic with AI"}
+            </Button>
+
+            {aiError && <ErrorBanner message={aiError} />}
+
+            {aiResults && aiResults.length === 0 && !aiError && (
+              <EmptyState message="No open resources found for this topic. Try a different phrasing." />
+            )}
+
+            {aiResults && aiResults.length > 0 && (
+              <div className="space-y-4">
+                {aiResults.map((resource) => (
+                  <ResourceCard
+                    key={resource.id}
+                    resource={resource}
+                    saved={savedIds.has(resource.id)}
+                    onToggleSave={handleToggleSave}
+                    aiFound
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

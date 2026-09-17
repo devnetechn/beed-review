@@ -9,16 +9,25 @@ export function ResourceCard({
   resource,
   saved,
   onToggleSave,
+  aiFound,
 }: {
   resource: ResourceHit;
   saved: boolean;
   onToggleSave: (id: string) => void;
+  aiFound?: boolean;
 }) {
   return (
     <Card className="space-y-2 p-4">
       <div className="flex items-start justify-between gap-2">
         <h3 className="font-medium leading-snug">{resource.title}</h3>
-        <LicenseBadge status={resource.license_status} />
+        <div className="flex flex-col items-end gap-1">
+          <LicenseBadge status={resource.license_status} />
+          {aiFound && (
+            <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-500">
+              AI-found
+            </span>
+          )}
+        </div>
       </div>
       {resource.description && <p className="text-sm text-neutral-600">{resource.description}</p>}
       <div className="text-xs text-neutral-400">
