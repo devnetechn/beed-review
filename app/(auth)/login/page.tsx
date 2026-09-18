@@ -44,7 +44,7 @@ export default function LoginPage() {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h1 className="text-xl font-semibold">BEEd Review</h1>
+        <h1 className="text-xl font-bold">BEEd Review</h1>
         <p className="text-sm text-neutral-500">Sign in to continue studying</p>
       </div>
 

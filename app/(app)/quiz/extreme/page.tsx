@@ -20,7 +20,7 @@ export default async function ExtremeQuizPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Extreme Quiz</h1>
+      <h1 className="text-xl font-bold">Extreme Quiz</h1>
       {usedToday && nextAvailableAt ? (
         <ExtremeLockedState nextAvailableAt={nextAvailableAt} />
       ) : (

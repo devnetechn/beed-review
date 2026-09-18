@@ -42,7 +42,7 @@ export default function SignupPage() {
   if (submitted) {
     return (
       <div className="space-y-4 text-center">
-        <h1 className="text-xl font-semibold">Check your email</h1>
+        <h1 className="text-xl font-bold">Check your email</h1>
         <p className="text-sm text-neutral-500">
           We sent a confirmation link to {email}. Confirm it, then sign in.
         </p>
@@ -56,7 +56,7 @@ export default function SignupPage() {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h1 className="text-xl font-semibold">Create your account</h1>
+        <h1 className="text-xl font-bold">Create your account</h1>
         <p className="text-sm text-neutral-500">Start building your BEEd study library</p>
       </div>
 

@@ -40,7 +40,7 @@ export function ResourceCard({
         {resource.source ?? "Unknown source"} · {resource.resource_type}
       </div>
       <div className="flex flex-wrap gap-2 pt-1">
-        <a href={resource.original_url} target="_blank" rel="noopener noreferrer">
+        <a href={resource.original_url}>
           <Button size="sm" variant="outline">
             Open
           </Button>

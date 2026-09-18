@@ -29,7 +29,7 @@ export default async function ExtremeQuizAttemptPage({
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold text-orange-700">{attempt.label}</h1>
+      <h1 className="text-xl font-bold text-orange-700">{attempt.label}</h1>
       {attempt.scored ? (
         <ExtremeQuizResult
           score={attempt.score}

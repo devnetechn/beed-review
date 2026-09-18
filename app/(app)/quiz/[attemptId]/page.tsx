@@ -29,7 +29,7 @@ export default async function QuizAttemptPage({
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">{attempt.label}</h1>
+      <h1 className="text-xl font-bold">{attempt.label}</h1>
       {attempt.scored ? (
         <QuizReview
           score={attempt.score}

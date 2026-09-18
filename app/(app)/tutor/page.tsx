@@ -24,7 +24,7 @@ export default async function TutorPage({
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-semibold">AI Tutor</h1>
+        <h1 className="text-xl font-bold">AI Tutor</h1>
         <p className="text-sm text-neutral-500">
           {resourceId ? "Ask about this resource." : "Ask about any BEEd/LET topic."}
         </p>

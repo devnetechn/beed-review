@@ -59,7 +59,7 @@ export default function QuizPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold">Take a Quiz</h1>
+        <h1 className="text-xl font-bold">Take a Quiz</h1>
         <p className="text-sm text-neutral-500">Test yourself on a BEEd/LET topic.</p>
       </div>
 

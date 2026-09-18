@@ -30,7 +30,7 @@ export default async function LibraryPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Library</h1>
+      <h1 className="text-xl font-bold">Library</h1>
       {rows.length === 0 ? (
         <EmptyState message="Nothing saved yet. Save resources from Search to build your library." />
       ) : (
@@ -51,7 +51,7 @@ export default async function LibraryPage() {
               {resource!.source ?? "Unknown source"} · {resource!.resource_type}
             </div>
             <div className="flex flex-wrap gap-2 pt-1">
-              <a href={resource!.original_url} target="_blank" rel="noopener noreferrer">
+              <a href={resource!.original_url}>
                 <button className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm">
                   Open
                 </button>

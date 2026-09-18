@@ -40,7 +40,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold">{greeting()}</h1>
+        <h1 className="text-2xl font-bold">{greeting()}</h1>
         <p className="text-neutral-500">What do you want to study?</p>
       </div>
 
