@@ -1,0 +1,23 @@
+import { createServiceClient } from "@/lib/supabase/service";
+
+export type VisibleSubject = { id: string; slug: string; name: string };
+
+export async function getVisibleSubjects(userId: string): Promise<VisibleSubject[]> {
+  const supabase = createServiceClient();
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("major_id")
+    .eq("id", userId)
+    .maybeSingle();
+
+  const majorId = profile?.major_id ?? null;
+
+  const query = supabase.from("subjects").select("id, slug, name").order("name", { ascending: true });
+
+  const { data } = majorId
+    ? await query.or(`major_id.is.null,major_id.eq.${majorId}`)
+    : await query.is("major_id", null);
+
+  return (data ?? []) as VisibleSubject[];
+}
