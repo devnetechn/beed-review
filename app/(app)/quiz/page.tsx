@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { ErrorBanner } from "@/components/common/ErrorBanner";
@@ -13,10 +13,23 @@ const COUNTS = [5, 10, 20, 50] as const;
 const DIFFICULTIES = ["easy", "medium", "hard"] as const;
 
 export default function QuizPage() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <QuizPageContent />
+    </Suspense>
+  );
+}
+
+function QuizPageContent() {
   const router = useRouter();
-  const [step, setStep] = useState<"subject" | "topic" | "config">("subject");
+  const searchParams = useSearchParams();
+  const presetTopicId = searchParams.get("topicId");
+  const presetTopicName = searchParams.get("topicName");
+  const [step, setStep] = useState<"subject" | "topic" | "config">(
+    presetTopicId ? "config" : "subject"
+  );
   const [topics, setTopics] = useState<Topic[]>([]);
-  const [topicId, setTopicId] = useState<string | null>(null);
+  const [topicId, setTopicId] = useState<string | null>(presetTopicId);
   const [topicsLoading, setTopicsLoading] = useState(false);
   const [count, setCount] = useState<5 | 10 | 20 | 50>(10);
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium");
@@ -111,9 +124,18 @@ export default function QuizPage() {
 
       {step === "config" && (
         <div className="space-y-4">
-          <Button variant="ghost" size="sm" onClick={() => setStep("topic")}>
-            ← Back to topics
-          </Button>
+          {presetTopicId ? (
+            <Button variant="ghost" size="sm" onClick={() => router.push("/search")}>
+              ← Back to search
+            </Button>
+          ) : (
+            <Button variant="ghost" size="sm" onClick={() => setStep("topic")}>
+              ← Back to topics
+            </Button>
+          )}
+          {presetTopicName && (
+            <p className="text-sm font-medium">Topic: {presetTopicName}</p>
+          )}
           <div>
             <p className="mb-2 text-sm font-medium">Number of questions</p>
             <div className="flex gap-2">

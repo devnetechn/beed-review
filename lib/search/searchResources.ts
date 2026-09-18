@@ -12,7 +12,7 @@ export type ResourceHit = {
 };
 
 export type SubjectHit = { slug: string; name: string };
-export type TopicHit = { slug: string; name: string; subject_slug: string };
+export type TopicHit = { id: string; slug: string; name: string; subject_slug: string };
 
 export async function searchAll(query: string) {
   if (!query.trim()) {
@@ -25,7 +25,7 @@ export async function searchAll(query: string) {
     supabase.from("subjects").select("slug, name").ilike("name", `%${query}%`).limit(5),
     supabase
       .from("topics")
-      .select("slug, name, subjects(slug)")
+      .select("id, slug, name, subjects(slug)")
       .ilike("name", `%${query}%`)
       .limit(5),
     supabase.rpc("search_resources", { search_query: query }),
@@ -33,7 +33,7 @@ export async function searchAll(query: string) {
 
   const topics: TopicHit[] = (topicsRes.data ?? []).map((t) => {
     const subject = Array.isArray(t.subjects) ? t.subjects[0] : t.subjects;
-    return { slug: t.slug, name: t.name, subject_slug: subject?.slug ?? "" };
+    return { id: t.id, slug: t.slug, name: t.name, subject_slug: subject?.slug ?? "" };
   });
 
   return {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -97,15 +98,42 @@ export default function SearchPage() {
           results.topics.length === 0 ? (
             <EmptyState message="No matches yet. Try a different subject or topic name." />
           ) : (
-            results.resources.map((resource, i) => (
-              <ResourceCard
-                key={resource.id}
-                resource={resource}
-                saved={savedIds.has(resource.id)}
-                onToggleSave={handleToggleSave}
-                index={i}
-              />
-            ))
+            <>
+              {results.topics.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Topics</p>
+                  {results.topics.map((topic) => (
+                    <div
+                      key={topic.slug}
+                      className="flex items-center justify-between rounded-lg border border-neutral-200 p-3"
+                    >
+                      <span className="text-sm">{topic.name}</span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        render={
+                          <Link
+                            href={`/quiz?topicId=${topic.id}&topicName=${encodeURIComponent(topic.name)}`}
+                          />
+                        }
+                      >
+                        Create quiz
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {results.resources.map((resource, i) => (
+                <ResourceCard
+                  key={resource.id}
+                  resource={resource}
+                  saved={savedIds.has(resource.id)}
+                  onToggleSave={handleToggleSave}
+                  index={i}
+                />
+              ))}
+            </>
           )}
 
           <div className="space-y-3 border-t border-neutral-200 pt-4">
