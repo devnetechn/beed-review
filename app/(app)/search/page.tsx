@@ -111,6 +111,7 @@ export default function SearchPage() {
                       <Button
                         size="sm"
                         variant="outline"
+                        nativeButton={false}
                         render={
                           <Link
                             href={`/quiz?topicId=${topic.id}&topicName=${encodeURIComponent(topic.name)}`}
