@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Confirm your email</title>
+</head>
+<body style="margin:0; padding:0; background-color:#f8f7fc; font-family:'Poppins', Helvetica, Arial, sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f8f7fc; padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px; width:100%; background-color:#fefdff; border-radius:16px; overflow:hidden; border:1px solid #e0dcf3;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background-color:#6d5dc4; padding:32px 32px 28px 32px; text-align:center;">
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 12px auto;">
+                <tr>
+                  <td style="width:48px; height:48px; background-color:#ffffff; border-radius:12px; text-align:center; vertical-align:middle; font-size:24px; font-weight:700; color:#6d5dc4; font-family:'Poppins', Helvetica, Arial, sans-serif;">
+                    W
+                  </td>
+                </tr>
+              </table>
+              <div style="font-size:20px; font-weight:700; color:#ffffff; font-family:'Poppins', Helvetica, Arial, sans-serif;">
+                WonnaLearn
+              </div>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:36px 32px 28px 32px;">
+              <h1 style="margin:0 0 12px 0; font-size:22px; font-weight:700; color:#292440; font-family:'Poppins', Helvetica, Arial, sans-serif;">
+                Confirm your email
+              </h1>
+              <p style="margin:0 0 24px 0; font-size:15px; line-height:1.6; color:#5c5470;">
+                Thanks for signing up for WonnaLearn! Click the button below to confirm your email address and start building your study library.
+              </p>
+
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 28px 0;">
+                <tr>
+                  <td style="border-radius:12px; background-color:#6d5dc4;">
+                    <a href="{{ .ConfirmationURL }}"
+                       style="display:inline-block; padding:14px 32px; font-size:15px; font-weight:600; color:#ffffff; text-decoration:none; font-family:'Poppins', Helvetica, Arial, sans-serif;">
+                      Confirm email
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:0 0 8px 0; font-size:13px; line-height:1.6; color:#8779b8;">
+                If the button doesn't work, copy and paste this link into your browser:
+              </p>
+              <p style="margin:0; font-size:13px; line-height:1.6; word-break:break-all;">
+                <a href="{{ .ConfirmationURL }}" style="color:#6d5dc4; text-decoration:underline;">{{ .ConfirmationURL }}</a>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:20px 32px 28px 32px; border-top:1px solid #e0dcf3;">
+              <p style="margin:0; font-size:12px; line-height:1.6; color:#a89bd4; text-align:center;">
+                If you didn't create a WonnaLearn account, you can safely ignore this email.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
