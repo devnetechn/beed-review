@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { ErrorBanner } from "@/components/common/ErrorBanner";
 
 export default function SignupPage() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +21,11 @@ export default function SignupPage() {
     setLoading(true);
     setError(null);
     const supabase = createClient();
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: name } },
+    });
     setLoading(false);
     if (error) {
       setError(error.message);
@@ -63,6 +68,16 @@ export default function SignupPage() {
       {error && <ErrorBanner message={error} />}
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-1.5">
+          <Label htmlFor="name">Full name</Label>
+          <Input
+            id="name"
+            type="text"
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
         <div className="space-y-1.5">
           <Label htmlFor="email">Email</Label>
           <Input

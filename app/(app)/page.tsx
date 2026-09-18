@@ -6,11 +6,10 @@ import { getWeakTopics, getRecommendedTopics } from "@/lib/quiz/weakTopics";
 
 export const dynamic = "force-dynamic";
 
-function greeting() {
+function greeting(name: string | null) {
   const hour = new Date().getHours();
-  if (hour < 12) return "Good morning.";
-  if (hour < 18) return "Good afternoon.";
-  return "Good evening.";
+  const base = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  return name ? `${base}, ${name}.` : `${base}.`;
 }
 
 export default async function DashboardPage() {
@@ -18,6 +17,12 @@ export default async function DashboardPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("display_name")
+    .eq("id", user?.id ?? "")
+    .maybeSingle();
 
   const { data: saved } = await supabase
     .from("saved_resources")
@@ -40,7 +45,9 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold">{greeting()}</h1>
+        <h1 className="text-2xl font-bold">
+          {greeting(profile?.display_name?.split(" ")[0] ?? null)}
+        </h1>
         <p className="text-neutral-500">What do you want to study?</p>
       </div>
 

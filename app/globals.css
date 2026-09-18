@@ -5,26 +5,26 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  /* Warm Academic: retint Tailwind's neutral scale from cool gray to warm
-     taupe so every existing neutral-shade utility class across the app
-     picks up the new palette without per-component edits. */
-  --color-neutral-50: #fbf8f2;
-  --color-neutral-100: #f3ead8;
-  --color-neutral-200: #ead9bd;
-  --color-neutral-300: #ddc7a0;
-  --color-neutral-400: #b8a482;
-  --color-neutral-500: #8a7a5c;
-  --color-neutral-600: #6b5d45;
-  --color-neutral-700: #4f4432;
-  --color-neutral-800: #362f22;
-  --color-neutral-900: #2b2620;
-  --color-neutral-950: #1c1811;
+  /* Lavender: retint Tailwind's neutral scale from cool gray to lavender-gray
+     so every existing neutral-shade utility class across the app picks up
+     the new palette without per-component edits. */
+  --color-neutral-50: #f8f7fc;
+  --color-neutral-100: #efedf9;
+  --color-neutral-200: #e0dcf3;
+  --color-neutral-300: #cac2e8;
+  --color-neutral-400: #a89bd4;
+  --color-neutral-500: #8779b8;
+  --color-neutral-600: #6a5d96;
+  --color-neutral-700: #514874;
+  --color-neutral-800: #3a3355;
+  --color-neutral-900: #292440;
+  --color-neutral-950: #1a1730;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-poppins);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -66,24 +66,24 @@
 }
 
 :root {
-  --background: #fbf8f2;
-  --foreground: #2b2620;
-  --card: #fffefb;
-  --card-foreground: #2b2620;
-  --popover: #fffefb;
-  --popover-foreground: #2b2620;
-  --primary: #3a4a35;
-  --primary-foreground: #fbf8f2;
-  --secondary: #f3ead8;
-  --secondary-foreground: #3a4a35;
-  --muted: #f3ead8;
-  --muted-foreground: #8a7a5c;
-  --accent: #b5651d;
-  --accent-foreground: #fffefb;
+  --background: #f8f7fc;
+  --foreground: #292440;
+  --card: #fefdff;
+  --card-foreground: #292440;
+  --popover: #fefdff;
+  --popover-foreground: #292440;
+  --primary: #6d5dc4;
+  --primary-foreground: #ffffff;
+  --secondary: #efedf9;
+  --secondary-foreground: #6d5dc4;
+  --muted: #efedf9;
+  --muted-foreground: #8779b8;
+  --accent: #d1699e;
+  --accent-foreground: #ffffff;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #ead9bd;
-  --input: #ead9bd;
-  --ring: #b5651d;
+  --border: #e0dcf3;
+  --input: #e0dcf3;
+  --ring: #6d5dc4;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -93,14 +93,14 @@
   --motion-fast: 150ms;
   --motion-base: 250ms;
   --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
-  --sidebar: #fffefb;
-  --sidebar-foreground: #2b2620;
-  --sidebar-primary: #3a4a35;
-  --sidebar-primary-foreground: #fbf8f2;
-  --sidebar-accent: #f3ead8;
-  --sidebar-accent-foreground: #3a4a35;
-  --sidebar-border: #ead9bd;
-  --sidebar-ring: #b5651d;
+  --sidebar: #fefdff;
+  --sidebar-foreground: #292440;
+  --sidebar-primary: #6d5dc4;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #efedf9;
+  --sidebar-accent-foreground: #6d5dc4;
+  --sidebar-border: #e0dcf3;
+  --sidebar-ring: #6d5dc4;
 }
 
 .dark {
