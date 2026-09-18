@@ -6,13 +6,31 @@ export async function GET(request: NextRequest) {
   if (!subjectSlug) return NextResponse.json({ topics: [] });
 
   const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let callerMajorId: string | null = null;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("major_id")
+      .eq("id", user.id)
+      .maybeSingle();
+    callerMajorId = profile?.major_id ?? null;
+  }
+
   const { data: subject } = await supabase
     .from("subjects")
-    .select("id, name")
+    .select("id, name, major_id")
     .eq("slug", subjectSlug)
     .maybeSingle();
 
   if (!subject) return NextResponse.json({ topics: [] });
+  if (subject.major_id && subject.major_id !== callerMajorId) {
+    return NextResponse.json({ topics: [] });
+  }
 
   const { data: topics } = await supabase
     .from("topics")
