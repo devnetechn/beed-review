@@ -8,24 +8,46 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ErrorBanner } from "@/components/common/ErrorBanner";
+import { COURSES, BSED_MAJORS } from "@/lib/sources/courses";
 
 export default function SignupPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [courseSlug, setCourseSlug] = useState<string | null>(null);
+  const [majorSlug, setMajorSlug] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  function handlePickCourse(slug: string) {
+    setCourseSlug(slug);
+    if (slug !== "bsed") setMajorSlug(null);
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!courseSlug) {
+      setError("Please select your course.");
+      return;
+    }
+    if (courseSlug === "bsed" && !majorSlug) {
+      setError("Please select your major.");
+      return;
+    }
     setLoading(true);
     setError(null);
     const supabase = createClient();
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: name } },
+      options: {
+        data: {
+          full_name: name,
+          course_slug: courseSlug,
+          major_slug: courseSlug === "bsed" ? majorSlug : null,
+        },
+      },
     });
     setLoading(false);
     if (error) {
@@ -114,6 +136,49 @@ export default function SignupPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
+
+        <div className="space-y-1.5">
+          <Label>Course</Label>
+          <div className="flex flex-wrap gap-2">
+            {COURSES.map((c) => (
+              <button
+                key={c.slug}
+                type="button"
+                onClick={() => handlePickCourse(c.slug)}
+                className={`rounded-full border px-3 py-1.5 text-sm ${
+                  courseSlug === c.slug
+                    ? "border-neutral-900 bg-neutral-900 text-white"
+                    : "border-neutral-200 text-neutral-700"
+                }`}
+              >
+                {c.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {courseSlug === "bsed" && (
+          <div className="space-y-1.5">
+            <Label>Major</Label>
+            <div className="flex flex-wrap gap-2">
+              {BSED_MAJORS.map((m) => (
+                <button
+                  key={m.slug}
+                  type="button"
+                  onClick={() => setMajorSlug(m.slug)}
+                  className={`rounded-full border px-3 py-1.5 text-sm ${
+                    majorSlug === m.slug
+                      ? "border-neutral-900 bg-neutral-900 text-white"
+                      : "border-neutral-200 text-neutral-700"
+                  }`}
+                >
+                  {m.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <Button type="submit" className="w-full" disabled={loading}>
           {loading ? "Creating account…" : "Sign up"}
         </Button>
