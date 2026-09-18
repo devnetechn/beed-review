@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { SUBJECTS } from "@/lib/sources/subjects";
 import { saveSubjectInterestsAction } from "@/lib/profile/interests";
 
 export function SubjectInterestsPicker() {
@@ -12,6 +11,13 @@ export function SubjectInterestsPicker() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [saving, setSaving] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const [subjectOptions, setSubjectOptions] = useState<{ slug: string; name: string }[]>([]);
+
+  useEffect(() => {
+    fetch("/api/subjects")
+      .then((res) => res.json())
+      .then((data) => setSubjectOptions(data.subjects ?? []));
+  }, []);
 
   function toggle(slug: string) {
     setSelected((prev) => {
@@ -47,7 +53,7 @@ export function SubjectInterestsPicker() {
         </p>
       </div>
       <div className="flex flex-wrap gap-2">
-        {SUBJECTS.map((s) => (
+        {subjectOptions.map((s) => (
           <button
             key={s.slug}
             type="button"

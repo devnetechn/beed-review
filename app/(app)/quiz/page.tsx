@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { ErrorBanner } from "@/components/common/ErrorBanner";
-import { SUBJECTS } from "@/lib/sources/subjects";
 import { startTopicQuizAction, startSubjectQuizAction } from "@/lib/quiz/actions";
 
 type Topic = { id: string; name: string };
@@ -35,6 +34,8 @@ function QuizPageContent() {
   const [subjectName, setSubjectName] = useState<string | null>(null);
   const [isOverall, setIsOverall] = useState(false);
   const [topicsLoading, setTopicsLoading] = useState(false);
+  const [subjectOptions, setSubjectOptions] = useState<{ slug: string; name: string }[]>([]);
+  const [subjectOptionsLoading, setSubjectOptionsLoading] = useState(true);
   const [count, setCount] = useState<5 | 10 | 20 | 50>(10);
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium");
   const [starting, setStarting] = useState(false);
@@ -61,6 +62,13 @@ function QuizPageContent() {
     if (!presetSubjectSlug) return;
     queueMicrotask(() => handlePickSubject(presetSubjectSlug));
   }, [presetSubjectSlug]);
+
+  useEffect(() => {
+    fetch("/api/subjects")
+      .then((res) => res.json())
+      .then((data) => setSubjectOptions(data.subjects ?? []))
+      .finally(() => setSubjectOptionsLoading(false));
+  }, []);
 
   function handlePickTopic(id: string) {
     setTopicId(id);
@@ -104,19 +112,23 @@ function QuizPageContent() {
       {step === "subject" && (
         <div className="space-y-2">
           <p className="text-sm font-medium">Pick a subject</p>
-          <div className="grid grid-cols-1 gap-2">
-            {SUBJECTS.map((s) => (
-              <Button
-                key={s.slug}
-                variant="outline"
-                className="justify-start"
-                disabled={topicsLoading}
-                onClick={() => handlePickSubject(s.slug)}
-              >
-                {s.name}
-              </Button>
-            ))}
-          </div>
+          {subjectOptionsLoading ? (
+            <Spinner />
+          ) : (
+            <div className="grid grid-cols-1 gap-2">
+              {subjectOptions.map((s) => (
+                <Button
+                  key={s.slug}
+                  variant="outline"
+                  className="justify-start"
+                  disabled={topicsLoading}
+                  onClick={() => handlePickSubject(s.slug)}
+                >
+                  {s.name}
+                </Button>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
