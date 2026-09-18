@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -25,6 +25,7 @@ function QuizPageContent() {
   const searchParams = useSearchParams();
   const presetTopicId = searchParams.get("topicId");
   const presetTopicName = searchParams.get("topicName");
+  const presetSubjectSlug = searchParams.get("subjectSlug");
   const [step, setStep] = useState<"subject" | "topic" | "config">(
     presetTopicId ? "config" : "subject"
   );
@@ -55,6 +56,11 @@ function QuizPageContent() {
       setTopicsLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (!presetSubjectSlug) return;
+    queueMicrotask(() => handlePickSubject(presetSubjectSlug));
+  }, [presetSubjectSlug]);
 
   function handlePickTopic(id: string) {
     setTopicId(id);

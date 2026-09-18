@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getWeakTopics, getRecommendedTopics } from "@/lib/quiz/weakTopics";
+import { SubjectInterestsPicker } from "@/components/onboarding/SubjectInterestsPicker";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +21,7 @@ export default async function DashboardPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("display_name")
+    .select("display_name, subject_interests_prompted")
     .eq("id", user?.id ?? "")
     .maybeSingle();
 
@@ -50,6 +51,8 @@ export default async function DashboardPage() {
         </h1>
         <p className="text-neutral-500">What do you want to study?</p>
       </div>
+
+      {profile && !profile.subject_interests_prompted && <SubjectInterestsPicker />}
 
       <div className="grid grid-cols-1 gap-3">
         <Link href="/search">
@@ -142,7 +145,9 @@ export default async function DashboardPage() {
               href={
                 r.topicId
                   ? `/quiz?topicId=${r.topicId}&topicName=${encodeURIComponent(r.label)}`
-                  : "/quiz"
+                  : r.subjectSlug
+                    ? `/quiz?subjectSlug=${r.subjectSlug}`
+                    : "/quiz"
               }
               className="rounded-full border border-neutral-200 px-3 py-1.5 text-sm hover:bg-neutral-50"
             >

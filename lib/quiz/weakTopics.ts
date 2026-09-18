@@ -1,4 +1,6 @@
 import { createServiceClient } from "@/lib/supabase/service";
+import { getSubjectInterests } from "@/lib/profile/interests";
+import { SUBJECTS } from "@/lib/sources/subjects";
 import type { WeakTopic } from "./types";
 
 const MIN_QUESTIONS_FOR_SIGNAL = 3;
@@ -88,10 +90,24 @@ export async function getWeakTopics(userId: string, limit = 3): Promise<WeakTopi
 
 const DEFAULT_RECOMMENDATIONS = ["Teaching Profession", "Curriculum Development"];
 
-export type RecommendedTopic = { label: string; topicId: string | null };
+export type RecommendedTopic = { label: string; topicId: string | null; subjectSlug: string | null };
 
 export async function getRecommendedTopics(userId: string, limit = 2): Promise<RecommendedTopic[]> {
   const weak = await getWeakTopics(userId, limit);
-  if (weak.length > 0) return weak.map((w) => ({ label: w.topicName, topicId: w.topicId }));
-  return DEFAULT_RECOMMENDATIONS.slice(0, limit).map((label) => ({ label, topicId: null }));
+  if (weak.length > 0) {
+    return weak.map((w) => ({ label: w.topicName, topicId: w.topicId, subjectSlug: null }));
+  }
+
+  const interests = await getSubjectInterests(userId);
+  if (interests.length > 0) {
+    return interests
+      .slice(0, limit)
+      .map((s) => ({ label: s.subjectName, topicId: null, subjectSlug: s.subjectSlug }));
+  }
+
+  return DEFAULT_RECOMMENDATIONS.slice(0, limit).map((label) => ({
+    label,
+    topicId: null,
+    subjectSlug: SUBJECTS.find((s) => s.name === label)?.slug ?? null,
+  }));
 }
