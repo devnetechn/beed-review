@@ -1,6 +1,7 @@
 "use client";
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Spinner } from "@/components/ui/spinner";
 import { ErrorBanner } from "@/components/common/ErrorBanner";
 
 export function SummarySheet({
@@ -23,7 +24,11 @@ export function SummarySheet({
           <SheetTitle>Study Notes</SheetTitle>
         </SheetHeader>
         <div className="space-y-2 px-4 pb-6">
-          {loading && <p className="text-sm text-neutral-400">Generating notes…</p>}
+          {loading && (
+            <div className="flex items-center gap-2 text-sm text-neutral-400">
+              <Spinner /> Generating notes…
+            </div>
+          )}
           {error && <ErrorBanner message={error} />}
           {content && (
             <div className="whitespace-pre-wrap text-sm text-neutral-700">{content}</div>

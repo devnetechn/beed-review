@@ -5,7 +5,9 @@ import Link from "next/link";
 import { Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { ErrorBanner } from "@/components/common/ErrorBanner";
+import { TypingIndicator } from "./TypingIndicator";
 import { startTutorConversationAction, sendTutorMessageAction } from "@/lib/ai/actions";
 
 type Message = { role: "user" | "assistant"; content: string; wantsExtremeQuiz?: boolean };
@@ -75,7 +77,11 @@ export function ChatThread({
         </div>
       )}
       <div className="flex-1 space-y-3 overflow-y-auto py-3">
-        {loading && <p className="text-sm text-neutral-400">Loading…</p>}
+        {loading && (
+          <div className="flex items-center gap-2 text-sm text-neutral-400">
+            <Spinner /> Loading…
+          </div>
+        )}
         {messages.map((m, i) => (
           <div key={i} className="space-y-1.5">
             <div className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -102,7 +108,11 @@ export function ChatThread({
             )}
           </div>
         ))}
-        {sending && <p className="text-sm text-neutral-400">Thinking…</p>}
+        {sending && (
+          <div className="flex justify-start">
+            <TypingIndicator />
+          </div>
+        )}
         <div ref={bottomRef} />
       </div>
       {error && <ErrorBanner message={error} />}

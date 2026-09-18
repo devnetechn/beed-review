@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { ErrorBanner } from "@/components/common/ErrorBanner";
 import { SUBJECTS } from "@/lib/sources/subjects";
 import { startTopicQuizAction } from "@/lib/quiz/actions";
@@ -144,7 +145,13 @@ export default function QuizPage() {
             </div>
           </div>
           <Button className="w-full" disabled={starting} onClick={handleStart}>
-            {starting ? "Generating quiz…" : "Start Quiz"}
+            {starting ? (
+              <span className="flex items-center gap-2">
+                <Spinner /> Generating quiz…
+              </span>
+            ) : (
+              "Start Quiz"
+            )}
           </Button>
         </div>
       )}

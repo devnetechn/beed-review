@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { ErrorBanner } from "@/components/common/ErrorBanner";
 import { submitQuizAction } from "@/lib/quiz/actions";
 import type { QuizQuestionForTaking } from "@/lib/quiz/types";
@@ -76,7 +77,13 @@ export function QuizTaker({
         </Button>
         {isLast ? (
           <Button className="flex-1" disabled={!allAnswered || submitting} onClick={handleSubmit}>
-            {submitting ? "Submitting…" : "Submit Quiz"}
+            {submitting ? (
+              <span className="flex items-center gap-2">
+                <Spinner /> Submitting…
+              </span>
+            ) : (
+              "Submit Quiz"
+            )}
           </Button>
         ) : (
           <Button

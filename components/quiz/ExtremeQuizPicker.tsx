@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { ErrorBanner } from "@/components/common/ErrorBanner";
 import { SUBJECTS } from "@/lib/sources/subjects";
 import { startExtremeQuizAction } from "@/lib/quiz/actions";
@@ -102,7 +103,13 @@ export function ExtremeQuizPicker() {
                   disabled={startingTopicId !== null}
                   onClick={() => handlePickTopic(t.id)}
                 >
-                  {startingTopicId === t.id ? "Generating your Extreme Quiz…" : t.name}
+                  {startingTopicId === t.id ? (
+                    <span className="flex items-center gap-2">
+                      <Spinner /> Generating your Extreme Quiz…
+                    </span>
+                  ) : (
+                    t.name
+                  )}
                 </Button>
               ))}
             </div>

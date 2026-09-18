@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { ResourceCard } from "@/components/resource/ResourceCard";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ErrorBanner } from "@/components/common/ErrorBanner";
@@ -83,7 +84,11 @@ export default function SearchPage() {
 
       {error && <ErrorBanner message={error} />}
 
-      {isPending && <p className="text-sm text-neutral-400">Searching…</p>}
+      {isPending && (
+        <div className="flex items-center gap-2 text-sm text-neutral-400">
+          <Spinner /> Searching…
+        </div>
+      )}
 
       {results && !isPending && (
         <div className="space-y-6">
@@ -110,9 +115,13 @@ export default function SearchPage() {
               onClick={handleResearch}
               disabled={isResearching || !query.trim()}
             >
-              {isResearching
-                ? "Researching… this can take up to 30 seconds"
-                : "Research this topic with AI"}
+              {isResearching ? (
+                <span className="flex items-center gap-2">
+                  <Spinner /> Researching… this can take up to 30 seconds
+                </span>
+              ) : (
+                "Research this topic with AI"
+              )}
             </Button>
 
             {aiError && <ErrorBanner message={aiError} />}

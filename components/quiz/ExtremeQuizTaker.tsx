@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { ErrorBanner } from "@/components/common/ErrorBanner";
 import { submitQuizAction } from "@/lib/quiz/actions";
 import type { QuizQuestionForTaking } from "@/lib/quiz/types";
@@ -130,7 +131,15 @@ export function ExtremeQuizTaker({
       {error && <ErrorBanner message={error} />}
 
       <Button className="w-full" disabled={!answers[current.id] || submitting} onClick={advance}>
-        {submitting ? "Submitting…" : isLast ? "Submit" : "Next"}
+        {submitting ? (
+          <span className="flex items-center gap-2">
+            <Spinner /> Submitting…
+          </span>
+        ) : isLast ? (
+          "Submit"
+        ) : (
+          "Next"
+        )}
       </Button>
     </div>
   );

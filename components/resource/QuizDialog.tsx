@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 
 const COUNTS = [5, 10, 20, 50] as const;
 const DIFFICULTIES = ["easy", "medium", "hard"] as const;
@@ -61,7 +62,13 @@ export function QuizDialog({
         </div>
         <DialogFooter>
           <Button disabled={loading} onClick={() => onGenerate(count, difficulty)} className="w-full">
-            {loading ? "Generating…" : "Generate"}
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <Spinner /> Generating…
+              </span>
+            ) : (
+              "Generate"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
