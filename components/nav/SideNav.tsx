@@ -18,7 +18,7 @@ export function SideNav() {
 
   return (
     <nav className="hidden w-56 shrink-0 flex-col gap-1 border-r border-neutral-200 p-4 md:flex">
-      <div className="mb-4 px-2 text-lg font-semibold">BEEd Review</div>
+      <div className="mb-4 px-2 text-lg font-semibold">WonnaLearn</div>
       {ITEMS.map(({ href, label, icon: Icon }) => {
         const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
         return (

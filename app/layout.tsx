@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BEEd Review",
+  title: "WonnaLearn",
   description: "Find and study legally accessible BEEd/LET resources.",
   icons: {
     icon: "/icons/icon-512.png",

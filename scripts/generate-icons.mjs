@@ -7,8 +7,8 @@ mkdirSync(outDir, { recursive: true });
 
 function iconSvg(size, fontSize, yRatio) {
   return `<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
-  <rect width="${size}" height="${size}" fill="#171717"/>
-  <text x="${size / 2}" y="${size * yRatio}" font-family="Georgia, 'Times New Roman', serif" font-size="${fontSize}" font-weight="bold" fill="#ffffff" text-anchor="middle">B</text>
+  <rect width="${size}" height="${size}" fill="#6d5dc4"/>
+  <text x="${size / 2}" y="${size * yRatio}" font-family="Poppins, Arial, sans-serif" font-size="${fontSize}" font-weight="700" fill="#ffffff" text-anchor="middle">W</text>
 </svg>`;
 }
 
