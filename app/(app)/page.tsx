@@ -121,12 +121,13 @@ export default async function DashboardPage() {
           <h2 className="text-sm font-medium text-neutral-500">Weak Areas</h2>
           <div className="flex flex-wrap gap-2">
             {weakTopics.map((t) => (
-              <span
+              <Link
                 key={t.topicId}
-                className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-sm text-amber-800"
+                href={`/quiz?topicId=${t.topicId}&topicName=${encodeURIComponent(t.topicName)}`}
+                className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-sm text-amber-800 hover:bg-amber-100"
               >
                 {t.topicName} ({Math.round(t.accuracy * 100)}%)
-              </span>
+              </Link>
             ))}
           </div>
         </section>
@@ -135,10 +136,18 @@ export default async function DashboardPage() {
       <section className="space-y-3">
         <h2 className="text-sm font-medium text-neutral-500">Recommended for You</h2>
         <div className="flex flex-wrap gap-2">
-          {recommended.map((name) => (
-            <span key={name} className="rounded-full border border-neutral-200 px-3 py-1.5 text-sm">
-              {name}
-            </span>
+          {recommended.map((r) => (
+            <Link
+              key={r.label}
+              href={
+                r.topicId
+                  ? `/quiz?topicId=${r.topicId}&topicName=${encodeURIComponent(r.label)}`
+                  : "/quiz"
+              }
+              className="rounded-full border border-neutral-200 px-3 py-1.5 text-sm hover:bg-neutral-50"
+            >
+              {r.label}
+            </Link>
           ))}
         </div>
       </section>

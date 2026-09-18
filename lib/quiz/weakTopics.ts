@@ -88,8 +88,10 @@ export async function getWeakTopics(userId: string, limit = 3): Promise<WeakTopi
 
 const DEFAULT_RECOMMENDATIONS = ["Teaching Profession", "Curriculum Development"];
 
-export async function getRecommendedTopics(userId: string, limit = 2): Promise<string[]> {
+export type RecommendedTopic = { label: string; topicId: string | null };
+
+export async function getRecommendedTopics(userId: string, limit = 2): Promise<RecommendedTopic[]> {
   const weak = await getWeakTopics(userId, limit);
-  if (weak.length > 0) return weak.map((w) => w.topicName);
-  return DEFAULT_RECOMMENDATIONS.slice(0, limit);
+  if (weak.length > 0) return weak.map((w) => ({ label: w.topicName, topicId: w.topicId }));
+  return DEFAULT_RECOMMENDATIONS.slice(0, limit).map((label) => ({ label, topicId: null }));
 }
