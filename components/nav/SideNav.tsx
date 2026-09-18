@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, BookOpen, ListChecks, MessageCircle } from "lucide-react";
+import { Home, Search, BookOpen, ListChecks, MessageCircle, User } from "lucide-react";
 
 const ITEMS = [
   { href: "/", label: "Home", icon: Home },
@@ -10,6 +10,7 @@ const ITEMS = [
   { href: "/library", label: "Library", icon: BookOpen },
   { href: "/quiz", label: "Quiz", icon: ListChecks },
   { href: "/tutor", label: "Tutor", icon: MessageCircle },
+  { href: "/profile", label: "Profile", icon: User },
 ];
 
 export function SideNav() {

@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { generateTopicQuiz, type QuizDifficulty } from "@/lib/ai/quiz";
 import { submitQuiz } from "./attempt";
 import { assertExtremeQuizAllowed, ExtremeQuizLimitError } from "./extreme";
+import { recordActivity } from "@/lib/gamification/activity";
 
 async function requireUser() {
   const supabase = await createClient();
@@ -54,7 +55,13 @@ export async function submitQuizAction(
 ): Promise<{ score: number; totalQuestions: number } | { error: string }> {
   try {
     const user = await requireUser();
-    return await submitQuiz(attemptId, user.id, answers);
+    const result = await submitQuiz(attemptId, user.id, answers);
+    await recordActivity(user.id, "quiz_completed", {
+      difficulty: result.difficulty,
+      score: result.score,
+      totalQuestions: result.totalQuestions,
+    });
+    return { score: result.score, totalQuestions: result.totalQuestions };
   } catch {
     return { error: "Couldn't submit the quiz. Please try again." };
   }

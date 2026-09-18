@@ -66,12 +66,12 @@ export async function submitQuiz(
   attemptId: string,
   userId: string,
   answers: { questionId: string; selectedAnswer: string }[]
-): Promise<{ score: number; totalQuestions: number }> {
+): Promise<{ score: number; totalQuestions: number; difficulty: string }> {
   const supabase = createServiceClient();
 
   const { data: attempt } = await supabase
     .from("quiz_attempts")
-    .select("user_id, total_questions")
+    .select("user_id, total_questions, difficulty")
     .eq("id", attemptId)
     .single();
 
@@ -95,5 +95,9 @@ export async function submitQuiz(
 
   await supabase.from("quiz_attempts").update({ score }).eq("id", attemptId);
 
-  return { score, totalQuestions: attempt.total_questions ?? answers.length };
+  return {
+    score,
+    totalQuestions: attempt.total_questions ?? answers.length,
+    difficulty: attempt.difficulty ?? "medium",
+  };
 }

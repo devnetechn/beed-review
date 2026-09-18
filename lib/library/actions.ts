@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { recordActivity } from "@/lib/gamification/activity";
 
 export async function toggleSaveResource(resourceId: string): Promise<{ saved: boolean }> {
   const supabase = await createClient();
@@ -25,6 +26,7 @@ export async function toggleSaveResource(resourceId: string): Promise<{ saved: b
   }
 
   await supabase.from("saved_resources").insert({ user_id: user.id, resource_id: resourceId });
+  await recordActivity(user.id, "resource_saved");
   revalidatePath("/library");
   revalidatePath("/");
   return { saved: true };

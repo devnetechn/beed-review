@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { summarizeResource } from "./summarize";
 import { generateQuiz, type QuizDifficulty } from "./quiz";
 import { getOrCreateConversation, sendTutorMessage } from "./tutor";
+import { recordActivity } from "@/lib/gamification/activity";
 import type { QuizQuestionResult } from "./types";
 
 async function requireUser() {
@@ -60,8 +61,10 @@ export async function sendTutorMessageAction(
   message: string
 ): Promise<{ reply: string; wantsExtremeQuiz: boolean } | { error: string }> {
   try {
-    await requireUser();
-    return await sendTutorMessage(conversationId, resourceId, message);
+    const user = await requireUser();
+    const result = await sendTutorMessage(conversationId, resourceId, message);
+    await recordActivity(user.id, "tutor_message");
+    return result;
   } catch {
     return { error: "Something went wrong. Please try again." };
   }
