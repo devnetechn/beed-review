@@ -5,14 +5,16 @@ import { recordActivity } from "@/lib/gamification/activity";
 
 export async function GET(request: NextRequest) {
   const q = request.nextUrl.searchParams.get("q") ?? "";
-  const results = await searchAll(q);
 
-  if (q.trim()) {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user) await recordActivity(user.id, "search");
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const results = await searchAll(q, user?.id ?? null);
+
+  if (q.trim() && user) {
+    await recordActivity(user.id, "search");
   }
 
   return NextResponse.json(results);
