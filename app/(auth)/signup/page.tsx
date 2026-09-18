@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ErrorBanner } from "@/components/common/ErrorBanner";
 import { COURSES, BSED_MAJORS } from "@/lib/sources/courses";
+import { SUBJECTS } from "@/lib/sources/subjects";
 
 export default function SignupPage() {
   const [name, setName] = useState("");
@@ -16,6 +17,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [courseSlug, setCourseSlug] = useState<string | null>(null);
   const [majorSlug, setMajorSlug] = useState<string | null>(null);
+  const [interestSlugs, setInterestSlugs] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -23,6 +25,15 @@ export default function SignupPage() {
   function handlePickCourse(slug: string) {
     setCourseSlug(slug);
     if (slug !== "bsed") setMajorSlug(null);
+  }
+
+  function toggleInterest(slug: string) {
+    setInterestSlugs((prev) => {
+      const next = new Set(prev);
+      if (next.has(slug)) next.delete(slug);
+      else next.add(slug);
+      return next;
+    });
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -46,6 +57,7 @@ export default function SignupPage() {
           full_name: name,
           course_slug: courseSlug,
           major_slug: courseSlug === "bsed" ? majorSlug : null,
+          subject_interest_slugs: Array.from(interestSlugs),
         },
       },
     });
@@ -178,6 +190,26 @@ export default function SignupPage() {
             </div>
           </div>
         )}
+
+        <div className="space-y-1.5">
+          <Label>What do you want to focus on? (optional)</Label>
+          <div className="flex flex-wrap gap-2">
+            {SUBJECTS.map((s) => (
+              <button
+                key={s.slug}
+                type="button"
+                onClick={() => toggleInterest(s.slug)}
+                className={`rounded-full border px-3 py-1.5 text-sm ${
+                  interestSlugs.has(s.slug)
+                    ? "border-neutral-900 bg-neutral-900 text-white"
+                    : "border-neutral-200 text-neutral-700"
+                }`}
+              >
+                {s.name}
+              </button>
+            ))}
+          </div>
+        </div>
 
         <Button type="submit" className="w-full" disabled={loading}>
           {loading ? "Creating account…" : "Sign up"}

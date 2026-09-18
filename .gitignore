@@ -43,3 +43,6 @@ next-env.d.ts
 
 # superpowers brainstorming companion
 .superpowers/
+
+# playwright MCP test artifacts
+.playwright-mcp/
