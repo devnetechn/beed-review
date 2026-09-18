@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,13 @@ export default function LoginPage() {
   return (
     <div className="space-y-6">
       <div className="text-center">
+        <Image
+          src="/logo-mark.png"
+          alt="WonnaLearn"
+          width={64}
+          height={64}
+          className="mx-auto mb-2 rounded-full"
+        />
         <h1 className="text-xl font-bold">WonnaLearn</h1>
         <p className="text-sm text-neutral-500">Sign in to continue studying</p>
       </div>

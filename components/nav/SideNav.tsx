@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Search, BookOpen, ListChecks, MessageCircle, User } from "lucide-react";
@@ -18,7 +19,16 @@ export function SideNav() {
 
   return (
     <nav className="hidden w-56 shrink-0 flex-col gap-1 border-r border-neutral-200 p-4 md:flex">
-      <div className="mb-4 px-2 text-lg font-semibold">WonnaLearn</div>
+      <div className="mb-4 flex items-center gap-2 px-2 text-lg font-semibold">
+        <Image
+          src="/logo-mark.png"
+          alt=""
+          width={28}
+          height={28}
+          className="rounded-full"
+        />
+        WonnaLearn
+      </div>
       {ITEMS.map(({ href, label, icon: Icon }) => {
         const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
         return (

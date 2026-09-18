@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -47,6 +48,13 @@ export default function SignupPage() {
   if (submitted) {
     return (
       <div className="space-y-4 text-center">
+        <Image
+          src="/logo-mark.png"
+          alt="WonnaLearn"
+          width={64}
+          height={64}
+          className="mx-auto rounded-full"
+        />
         <h1 className="text-xl font-bold">Check your email</h1>
         <p className="text-sm text-neutral-500">
           We sent a confirmation link to {email}. Confirm it, then sign in.
@@ -61,6 +69,13 @@ export default function SignupPage() {
   return (
     <div className="space-y-6">
       <div className="text-center">
+        <Image
+          src="/logo-mark.png"
+          alt="WonnaLearn"
+          width={64}
+          height={64}
+          className="mx-auto mb-2 rounded-full"
+        />
         <h1 className="text-xl font-bold">Create your account</h1>
         <p className="text-sm text-neutral-500">Start building your BEEd study library</p>
       </div>
