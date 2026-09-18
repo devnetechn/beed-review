@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { generateTopicQuiz, type QuizDifficulty } from "@/lib/ai/quiz";
+import { generateTopicQuiz, generateSubjectQuiz, type QuizDifficulty } from "@/lib/ai/quiz";
 import { submitQuiz } from "./attempt";
 import { assertExtremeQuizAllowed, ExtremeQuizLimitError } from "./extreme";
 import { recordActivity } from "@/lib/gamification/activity";
@@ -23,6 +23,20 @@ export async function startTopicQuizAction(
   try {
     const user = await requireUser();
     const { attemptId } = await generateTopicQuiz(topicId, user.id, count, difficulty);
+    return { attemptId };
+  } catch {
+    return { error: "Couldn't generate a quiz. Please try again." };
+  }
+}
+
+export async function startSubjectQuizAction(
+  subjectId: string,
+  count: 5 | 10 | 20 | 50,
+  difficulty: QuizDifficulty
+): Promise<{ attemptId: string } | { error: string }> {
+  try {
+    const user = await requireUser();
+    const { attemptId } = await generateSubjectQuiz(subjectId, user.id, count, difficulty);
     return { attemptId };
   } catch {
     return { error: "Couldn't generate a quiz. Please try again." };

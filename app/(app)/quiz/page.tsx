@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { ErrorBanner } from "@/components/common/ErrorBanner";
 import { SUBJECTS } from "@/lib/sources/subjects";
-import { startTopicQuizAction } from "@/lib/quiz/actions";
+import { startTopicQuizAction, startSubjectQuizAction } from "@/lib/quiz/actions";
 
 type Topic = { id: string; name: string };
 const COUNTS = [5, 10, 20, 50] as const;
@@ -30,6 +30,9 @@ function QuizPageContent() {
   );
   const [topics, setTopics] = useState<Topic[]>([]);
   const [topicId, setTopicId] = useState<string | null>(presetTopicId);
+  const [subjectId, setSubjectId] = useState<string | null>(null);
+  const [subjectName, setSubjectName] = useState<string | null>(null);
+  const [isOverall, setIsOverall] = useState(false);
   const [topicsLoading, setTopicsLoading] = useState(false);
   const [count, setCount] = useState<5 | 10 | 20 | 50>(10);
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium");
@@ -43,6 +46,8 @@ function QuizPageContent() {
       const res = await fetch(`/api/topics?subject=${encodeURIComponent(slug)}`);
       const data = await res.json();
       setTopics(data.topics ?? []);
+      setSubjectId(data.subjectId ?? null);
+      setSubjectName(data.subjectName ?? null);
       setStep("topic");
     } catch {
       setError("Couldn't load topics. Please try again.");
@@ -53,14 +58,26 @@ function QuizPageContent() {
 
   function handlePickTopic(id: string) {
     setTopicId(id);
+    setIsOverall(false);
+    setStep("config");
+  }
+
+  function handlePickOverall() {
+    setTopicId(null);
+    setIsOverall(true);
     setStep("config");
   }
 
   async function handleStart() {
-    if (!topicId) return;
     setStarting(true);
     setError(null);
-    const outcome = await startTopicQuizAction(topicId, count, difficulty);
+    const outcome = isOverall
+      ? subjectId
+        ? await startSubjectQuizAction(subjectId, count, difficulty)
+        : { error: "No subject selected." }
+      : topicId
+        ? await startTopicQuizAction(topicId, count, difficulty)
+        : { error: "No topic selected." };
     setStarting(false);
     if ("error" in outcome) {
       setError(outcome.error);
@@ -119,6 +136,15 @@ function QuizPageContent() {
               ))}
             </div>
           )}
+          {subjectId && (
+            <Button
+              variant="secondary"
+              className="w-full justify-start"
+              onClick={handlePickOverall}
+            >
+              Overall: {subjectName}
+            </Button>
+          )}
         </div>
       )}
 
@@ -133,7 +159,10 @@ function QuizPageContent() {
               ← Back to topics
             </Button>
           )}
-          {presetTopicName && (
+          {isOverall && subjectName && (
+            <p className="text-sm font-medium">Overall: {subjectName}</p>
+          )}
+          {!isOverall && presetTopicName && (
             <p className="text-sm font-medium">Topic: {presetTopicName}</p>
           )}
           <div>

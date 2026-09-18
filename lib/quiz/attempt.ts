@@ -10,7 +10,7 @@ export async function getQuizAttempt(
   const { data: attempt } = await supabase
     .from("quiz_attempts")
     .select(
-      "id, user_id, score, total_questions, difficulty, resource_id, topic_id, resources(title), topics(name)"
+      "id, user_id, score, total_questions, difficulty, resource_id, topic_id, subject_id, resources(title), topics(name), subjects(name)"
     )
     .eq("id", attemptId)
     .maybeSingle();
@@ -25,7 +25,8 @@ export async function getQuizAttempt(
 
   const resource = Array.isArray(attempt.resources) ? attempt.resources[0] : attempt.resources;
   const topic = Array.isArray(attempt.topics) ? attempt.topics[0] : attempt.topics;
-  const label = resource?.title ?? topic?.name ?? "Quiz";
+  const subject = Array.isArray(attempt.subjects) ? attempt.subjects[0] : attempt.subjects;
+  const label = resource?.title ?? topic?.name ?? (subject?.name ? `Overall: ${subject.name}` : "Quiz");
   const totalQuestions = attempt.total_questions ?? questions?.length ?? 0;
   const difficulty = attempt.difficulty ?? "medium";
 

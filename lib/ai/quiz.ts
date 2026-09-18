@@ -211,3 +211,105 @@ export async function generateTopicQuiz(
 
   return { attemptId: attempt.id, totalQuestions: parsed.questions.length };
 }
+
+function buildSubjectQuizUserPrompt(
+  subjectName: string,
+  topicNames: string[],
+  contextLines: string[]
+): string {
+  const context =
+    contextLines.length > 0
+      ? contextLines.join("\n")
+      : "(no linked resources yet — generate from general BEEd/LET curriculum knowledge of this subject)";
+  return `Subject: "${subjectName}"\n\nTopics covered in this subject:\n${topicNames.map((t) => `- ${t}`).join("\n")}\n\nRelated resources:\n${context}\n\nGenerate the questions spanning a mix of the topics above, not just one of them.`;
+}
+
+export async function generateSubjectQuiz(
+  subjectId: string,
+  userId: string,
+  count: 5 | 10 | 20 | 50,
+  difficulty: QuizDifficulty
+): Promise<{ attemptId: string; totalQuestions: number }> {
+  const supabase = createServiceClient();
+
+  const { data: subject } = await supabase
+    .from("subjects")
+    .select("name")
+    .eq("id", subjectId)
+    .single();
+
+  if (!subject) throw new Error("Subject not found");
+
+  const { data: topics } = await supabase
+    .from("topics")
+    .select("id, name")
+    .eq("subject_id", subjectId);
+
+  if (!topics || topics.length === 0) throw new Error("No topics found for this subject");
+
+  const topicIds = topics.map((t) => t.id);
+
+  const { data: linkedResources } = await supabase
+    .from("resource_topics")
+    .select("resources(title, description)")
+    .in("topic_id", topicIds)
+    .limit(8);
+
+  const contextLines = (linkedResources ?? [])
+    .map((r) => (Array.isArray(r.resources) ? r.resources[0] : r.resources))
+    .filter((r): r is NonNullable<typeof r> => !!r)
+    .map((r) => `- ${r.title}: ${r.description ?? ""}`);
+
+  const response = await getOpenAIClient().responses.create({
+    model: process.env.OPENAI_MODEL!,
+    input: [
+      { role: "system", content: buildQuizSystemPrompt(count, difficulty) },
+      {
+        role: "user",
+        content: buildSubjectQuizUserPrompt(
+          subject.name,
+          topics.map((t) => t.name),
+          contextLines
+        ),
+      },
+    ],
+    text: {
+      format: {
+        type: "json_schema",
+        name: "quiz_questions",
+        schema: QUIZ_JSON_SCHEMA,
+        strict: true,
+      },
+    },
+  });
+
+  const parsed = QuizResponseSchema.parse(JSON.parse(response.output_text));
+
+  const { data: attempt, error: attemptError } = await supabase
+    .from("quiz_attempts")
+    .insert({
+      user_id: userId,
+      subject_id: subjectId,
+      difficulty,
+      total_questions: parsed.questions.length,
+    })
+    .select("id")
+    .single();
+
+  if (attemptError || !attempt) throw new Error("Failed to create quiz attempt");
+
+  const { error: questionsError } = await supabase.from("quiz_questions").insert(
+    parsed.questions.map((q) => ({
+      quiz_attempt_id: attempt.id,
+      question_text: q.question,
+      choices: q.choices,
+      correct_answer: q.correct_answer,
+      explanation: q.explanation,
+      is_ai_generated: true,
+    }))
+  );
+
+  if (questionsError) throw new Error("Failed to save quiz questions");
+
+  return { attemptId: attempt.id, totalQuestions: parsed.questions.length };
+}

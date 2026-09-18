@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   const supabase = await createClient();
   const { data: subject } = await supabase
     .from("subjects")
-    .select("id")
+    .select("id, name")
     .eq("slug", subjectSlug)
     .maybeSingle();
 
@@ -20,5 +20,9 @@ export async function GET(request: NextRequest) {
     .eq("subject_id", subject.id)
     .order("name", { ascending: true });
 
-  return NextResponse.json({ topics: topics ?? [] });
+  return NextResponse.json({
+    topics: topics ?? [],
+    subjectId: subject.id,
+    subjectName: subject.name,
+  });
 }
