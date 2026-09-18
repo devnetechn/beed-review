@@ -48,11 +48,12 @@ export function QuizTaker({
       </p>
       <p className="text-base font-medium">{current.question}</p>
       <div className="space-y-2">
-        {current.choices.map((choice) => (
+        {current.choices.map((choice, i) => (
           <button
             key={choice}
             onClick={() => selectAnswer(choice)}
-            className={`w-full rounded-lg border px-3 py-2 text-left text-sm ${
+            style={{ animationDelay: `${i * 50}ms` }}
+            className={`animate-in fade-in slide-in-from-bottom-1 w-full rounded-lg border px-3 py-2 text-left text-sm duration-300 ${
               answers[current.id] === choice
                 ? "border-neutral-900 bg-neutral-900 text-white"
                 : "border-neutral-200 text-neutral-700"

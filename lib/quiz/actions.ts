@@ -1,8 +1,9 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { generateTopicQuiz } from "@/lib/ai/quiz";
+import { generateTopicQuiz, type QuizDifficulty } from "@/lib/ai/quiz";
 import { submitQuiz } from "./attempt";
+import { assertExtremeQuizAllowed, ExtremeQuizLimitError } from "./extreme";
 
 async function requireUser() {
   const supabase = await createClient();
@@ -16,13 +17,33 @@ async function requireUser() {
 export async function startTopicQuizAction(
   topicId: string,
   count: 5 | 10 | 20 | 50,
-  difficulty: "easy" | "medium" | "hard"
+  difficulty: QuizDifficulty
 ): Promise<{ attemptId: string } | { error: string }> {
   try {
     const user = await requireUser();
     const { attemptId } = await generateTopicQuiz(topicId, user.id, count, difficulty);
     return { attemptId };
   } catch {
+    return { error: "Couldn't generate a quiz. Please try again." };
+  }
+}
+
+export async function startExtremeQuizAction(
+  topicId: string
+): Promise<
+  | { attemptId: string }
+  | { error: "already_used_today"; nextAvailableAt: string }
+  | { error: string }
+> {
+  try {
+    const user = await requireUser();
+    await assertExtremeQuizAllowed(user.id);
+    const { attemptId } = await generateTopicQuiz(topicId, user.id, 10, "extreme");
+    return { attemptId };
+  } catch (err) {
+    if (err instanceof ExtremeQuizLimitError) {
+      return { error: "already_used_today", nextAvailableAt: err.nextAvailableAt };
+    }
     return { error: "Couldn't generate a quiz. Please try again." };
   }
 }

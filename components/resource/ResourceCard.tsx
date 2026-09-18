@@ -11,14 +11,19 @@ export function ResourceCard({
   saved,
   onToggleSave,
   aiFound,
+  index = 0,
 }: {
   resource: ResourceHit;
   saved: boolean;
   onToggleSave: (id: string) => void;
   aiFound?: boolean;
+  index?: number;
 }) {
   return (
-    <Card className="space-y-2 p-4">
+    <Card
+      className="animate-in fade-in slide-in-from-bottom-1 space-y-2 p-4 duration-300"
+      style={{ animationDelay: `${Math.min(index, 10) * 40}ms` }}
+    >
       <div className="flex items-start justify-between gap-2">
         <h3 className="font-medium leading-snug">{resource.title}</h3>
         <div className="flex flex-col items-end gap-1">

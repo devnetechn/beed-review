@@ -15,6 +15,7 @@ export type QuizAttemptView =
       scored: false;
       attemptId: string;
       label: string;
+      difficulty: string;
       totalQuestions: number;
       questions: QuizQuestionForTaking[];
     }
@@ -22,6 +23,7 @@ export type QuizAttemptView =
       scored: true;
       attemptId: string;
       label: string;
+      difficulty: string;
       score: number;
       totalQuestions: number;
       questions: QuizQuestionReview[];

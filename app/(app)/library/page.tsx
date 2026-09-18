@@ -34,8 +34,12 @@ export default async function LibraryPage() {
       {rows.length === 0 ? (
         <EmptyState message="Nothing saved yet. Save resources from Search to build your library." />
       ) : (
-        rows.map(({ resource }) => (
-          <Card key={resource!.id} className="space-y-2 p-4">
+        rows.map(({ resource }, i) => (
+          <Card
+            key={resource!.id}
+            className="animate-in fade-in slide-in-from-bottom-1 space-y-2 p-4 duration-300"
+            style={{ animationDelay: `${Math.min(i, 10) * 40}ms` }}
+          >
             <div className="flex items-start justify-between gap-2">
               <h3 className="font-medium leading-snug">{resource!.title}</h3>
               <LicenseBadge status={resource!.license_status} />

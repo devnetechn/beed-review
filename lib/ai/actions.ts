@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { summarizeResource } from "./summarize";
-import { generateQuiz } from "./quiz";
+import { generateQuiz, type QuizDifficulty } from "./quiz";
 import { getOrCreateConversation, sendTutorMessage } from "./tutor";
 import type { QuizQuestionResult } from "./types";
 
@@ -30,7 +30,7 @@ export async function summarizeResourceAction(
 export async function generateQuizAction(
   resourceId: string,
   count: 5 | 10 | 20 | 50,
-  difficulty: "easy" | "medium" | "hard"
+  difficulty: QuizDifficulty
 ): Promise<{ attemptId: string; questions: QuizQuestionResult[] } | { error: string }> {
   try {
     const user = await requireUser();
@@ -58,11 +58,10 @@ export async function sendTutorMessageAction(
   conversationId: string,
   resourceId: string | null,
   message: string
-): Promise<{ reply: string } | { error: string }> {
+): Promise<{ reply: string; wantsExtremeQuiz: boolean } | { error: string }> {
   try {
     await requireUser();
-    const reply = await sendTutorMessage(conversationId, resourceId, message);
-    return { reply };
+    return await sendTutorMessage(conversationId, resourceId, message);
   } catch {
     return { error: "Something went wrong. Please try again." };
   }

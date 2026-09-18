@@ -92,12 +92,13 @@ export default function SearchPage() {
           results.topics.length === 0 ? (
             <EmptyState message="No matches yet. Try a different subject or topic name." />
           ) : (
-            results.resources.map((resource) => (
+            results.resources.map((resource, i) => (
               <ResourceCard
                 key={resource.id}
                 resource={resource}
                 saved={savedIds.has(resource.id)}
                 onToggleSave={handleToggleSave}
+                index={i}
               />
             ))
           )}
@@ -122,13 +123,14 @@ export default function SearchPage() {
 
             {aiResults && aiResults.length > 0 && (
               <div className="space-y-4">
-                {aiResults.map((resource) => (
+                {aiResults.map((resource, i) => (
                   <ResourceCard
                     key={resource.id}
                     resource={resource}
                     saved={savedIds.has(resource.id)}
                     onToggleSave={handleToggleSave}
                     aiFound
+                    index={i}
                   />
                 ))}
               </div>

@@ -7,6 +7,10 @@ export default function OfflinePage() {
         generation won&apos;t work until you&apos;re back online. Pages you&apos;ve already
         visited may still be available.
       </p>
+      {/* Plain <a>, not next/link's Link: this page is served by the service
+          worker while offline, and must not depend on any page-specific JS
+          chunk that may never have been cached (see public/sw.js). */}
+      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
       <a
         href="/"
         className="rounded-md bg-neutral-900 px-4 py-2 text-sm text-white"

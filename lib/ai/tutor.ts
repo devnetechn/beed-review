@@ -1,10 +1,23 @@
 import { getOpenAIClient } from "./client";
 import { createServiceClient } from "@/lib/supabase/service";
+import { TutorReplySchema } from "./types";
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
+const TUTOR_JSON_SCHEMA = {
+  type: "object",
+  properties: {
+    reply: { type: "string" },
+    wants_extreme_quiz: { type: "boolean" },
+  },
+  required: ["reply", "wants_extreme_quiz"],
+  additionalProperties: false,
+} as const;
+
 function buildTutorSystemPrompt(resourceContext: string | null): string {
-  const base = `You are a friendly, focused AI tutor for a Bachelor of Elementary Education (BEEd) exam-prep app, helping students prepare for the Philippine LET (Licensure Examination for Teachers). Stay strictly on BEEd/LET-related educational topics — politely decline unrelated requests. You can explain topics, simplify concepts, give examples, offer memory tricks/mnemonics, and quiz the student conversationally. Be concise and exam-focused.`;
+  const base = `You are a friendly, focused AI tutor for a Bachelor of Elementary Education (BEEd) exam-prep app, helping students prepare for the Philippine LET (Licensure Examination for Teachers). Stay strictly on BEEd/LET-related educational topics — politely decline unrelated requests. You can explain topics, simplify concepts, give examples, offer memory tricks/mnemonics, and quiz the student conversationally. Be concise and exam-focused.
+
+Respond with a JSON object containing "reply" (your conversational reply text) and "wants_extreme_quiz" (boolean). Set "wants_extreme_quiz" to true only when the student is explicitly asking to be quizzed, tested, or challenged with practice questions — in any phrasing or language — otherwise false. When true, keep "reply" natural (e.g. acknowledge the request) — a separate UI element will offer the quiz, so don't generate quiz questions yourself in "reply".`;
   if (resourceContext) {
     return `${base}\n\nThis conversation is focused on a specific resource:\n${resourceContext}\n\nGround your answers in this resource when relevant.`;
   }
@@ -63,7 +76,7 @@ export async function sendTutorMessage(
   conversationId: string,
   resourceId: string | null,
   userMessage: string
-): Promise<string> {
+): Promise<{ reply: string; wantsExtremeQuiz: boolean }> {
   const supabase = createServiceClient();
 
   await supabase.from("ai_messages").insert({
@@ -97,15 +110,28 @@ export async function sendTutorMessage(
       { role: "system", content: buildTutorSystemPrompt(resourceContext) },
       ...((history ?? []) as ChatMessage[]).map((m) => ({ role: m.role, content: m.content })),
     ],
+    text: {
+      format: {
+        type: "json_schema",
+        name: "tutor_reply",
+        schema: TUTOR_JSON_SCHEMA,
+        strict: true,
+      },
+    },
   });
 
-  const reply = response.output_text;
+  let parsed: { reply: string; wants_extreme_quiz: boolean };
+  try {
+    parsed = TutorReplySchema.parse(JSON.parse(response.output_text));
+  } catch {
+    parsed = { reply: response.output_text, wants_extreme_quiz: false };
+  }
 
   await supabase.from("ai_messages").insert({
     conversation_id: conversationId,
     role: "assistant",
-    content: reply,
+    content: parsed.reply,
   });
 
-  return reply;
+  return { reply: parsed.reply, wantsExtremeQuiz: parsed.wants_extreme_quiz };
 }

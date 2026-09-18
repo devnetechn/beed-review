@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import { Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ErrorBanner } from "@/components/common/ErrorBanner";
 import { startTutorConversationAction, sendTutorMessageAction } from "@/lib/ai/actions";
 
-type Message = { role: "user" | "assistant"; content: string };
+type Message = { role: "user" | "assistant"; content: string; wantsExtremeQuiz?: boolean };
 
 export function ChatThread({
   resourceId,
@@ -59,7 +61,10 @@ export function ChatThread({
       setError(outcome.error);
       return;
     }
-    setMessages((prev) => [...prev, { role: "assistant", content: outcome.reply }]);
+    setMessages((prev) => [
+      ...prev,
+      { role: "assistant", content: outcome.reply, wantsExtremeQuiz: outcome.wantsExtremeQuiz },
+    ]);
   }
 
   return (
@@ -72,14 +77,29 @@ export function ChatThread({
       <div className="flex-1 space-y-3 overflow-y-auto py-3">
         {loading && <p className="text-sm text-neutral-400">Loading…</p>}
         {messages.map((m, i) => (
-          <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-            <div
-              className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
-                m.role === "user" ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-900"
-              }`}
-            >
-              {m.content}
+          <div key={i} className="space-y-1.5">
+            <div className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+              <div
+                className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
+                  m.role === "user" ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-900"
+                }`}
+              >
+                {m.content}
+              </div>
             </div>
+            {m.role === "assistant" && m.wantsExtremeQuiz && (
+              <div className="flex justify-start">
+                <Link href="/quiz/extreme">
+                  <Button
+                    size="sm"
+                    className="animate-in fade-in gap-1.5 bg-orange-600 text-white duration-300 hover:bg-orange-700"
+                  >
+                    <Zap className="size-3.5" />
+                    Start Extreme Quiz
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
         ))}
         {sending && <p className="text-sm text-neutral-400">Thinking…</p>}

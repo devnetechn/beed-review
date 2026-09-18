@@ -12,7 +12,8 @@ export async function getWeakTopics(userId: string, limit = 3): Promise<WeakTopi
     .from("quiz_attempts")
     .select("id, resource_id, topic_id")
     .eq("user_id", userId)
-    .not("score", "is", null);
+    .not("score", "is", null)
+    .neq("difficulty", "extreme");
 
   if (!attempts || attempts.length === 0) return [];
 

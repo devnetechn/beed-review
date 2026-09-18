@@ -24,3 +24,9 @@ export const QuizResponseSchema = z.object({
 export type QuizQuestion = z.infer<typeof QuizQuestionSchema>;
 
 export type QuizQuestionResult = QuizQuestion & { id: string };
+
+export const TutorReplySchema = z.object({
+  reply: z.string().min(1),
+  wants_extreme_quiz: z.boolean(),
+});
+export type TutorReply = z.infer<typeof TutorReplySchema>;

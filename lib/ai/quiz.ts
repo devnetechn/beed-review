@@ -25,8 +25,14 @@ const QUIZ_JSON_SCHEMA = {
   additionalProperties: false,
 } as const;
 
-function buildQuizSystemPrompt(count: number, difficulty: string): string {
-  return `You are a quiz question generator for a Bachelor of Elementary Education (BEEd) exam-prep app. Generate exactly ${count} multiple-choice practice questions at ${difficulty} difficulty, based on the given resource. Each question needs exactly 4 choices, one correct_answer that exactly matches one of the choices verbatim, and a short explanation of why it's correct. These are AI-generated practice questions, not official LET exam questions — write them to be genuinely useful for review, grounded in the given content, not generic trivia.`;
+export type QuizDifficulty = "easy" | "medium" | "hard" | "extreme";
+
+function buildQuizSystemPrompt(count: number, difficulty: QuizDifficulty): string {
+  const extremeInstruction =
+    difficulty === "extreme"
+      ? " This is EXTREME difficulty: write questions that would challenge a top-performing reviewee — trickier distractors, less forgiving phrasing, edge-case scenarios, and details that require precise recall, not just general familiarity."
+      : "";
+  return `You are a quiz question generator for a Bachelor of Elementary Education (BEEd) exam-prep app. Generate exactly ${count} multiple-choice practice questions at ${difficulty} difficulty, based on the given resource.${extremeInstruction} Each question needs exactly 4 choices, one correct_answer that exactly matches one of the choices verbatim, and a short explanation of why it's correct. These are AI-generated practice questions, not official LET exam questions — write them to be genuinely useful for review, grounded in the given content, not generic trivia.`;
 }
 
 function buildQuizUserPrompt(
@@ -43,7 +49,7 @@ export async function generateQuiz(
   resourceId: string,
   userId: string,
   count: 5 | 10 | 20 | 50,
-  difficulty: "easy" | "medium" | "hard"
+  difficulty: QuizDifficulty
 ): Promise<{ attemptId: string; questions: QuizQuestionResult[] }> {
   const supabase = createServiceClient();
 
@@ -132,7 +138,7 @@ export async function generateTopicQuiz(
   topicId: string,
   userId: string,
   count: 5 | 10 | 20 | 50,
-  difficulty: "easy" | "medium" | "hard"
+  difficulty: QuizDifficulty
 ): Promise<{ attemptId: string; totalQuestions: number }> {
   const supabase = createServiceClient();
 
