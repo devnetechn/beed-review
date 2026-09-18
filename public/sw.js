@@ -1,4 +1,4 @@
-const CACHE_NAME = "beed-review-v1";
+const CACHE_NAME = "beed-review-v2";
 const STABLE_PATHS = [
   "/",
   "/offline",
@@ -31,7 +31,12 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/auth/")) return;
 
-  if (request.mode === "navigate") {
+  const isImmutableStaticAsset = url.pathname.startsWith("/_next/static/");
+
+  if (!isImmutableStaticAsset) {
+    // Network-first: navigations, RSC data fetches, and any other same-origin
+    // request must always prefer a fresh response so a new deploy is reflected
+    // immediately. Only fall back to the cache when the network is unavailable.
     event.respondWith(
       (async () => {
         try {
@@ -42,20 +47,26 @@ self.addEventListener("fetch", (event) => {
         } catch {
           const cached = await caches.match(request);
           if (cached) return cached;
-          const offlineFallback = await caches.match("/offline");
-          if (!offlineFallback) return Response.error();
-          const body = await offlineFallback.text();
-          return new Response(body, {
-            status: 200,
-            statusText: "OK",
-            headers: { "Content-Type": "text/html; charset=utf-8" },
-          });
+          if (request.mode === "navigate") {
+            const offlineFallback = await caches.match("/offline");
+            if (offlineFallback) {
+              const body = await offlineFallback.text();
+              return new Response(body, {
+                status: 200,
+                statusText: "OK",
+                headers: { "Content-Type": "text/html; charset=utf-8" },
+              });
+            }
+          }
+          return Response.error();
         }
       })()
     );
     return;
   }
 
+  // Cache-first is safe here: /_next/static/ assets are content-hashed and
+  // immutable, so a cached copy can never be stale.
   event.respondWith(
     (async () => {
       const cached = await caches.match(request);
