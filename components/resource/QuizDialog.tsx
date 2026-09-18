@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { ErrorBanner } from "@/components/common/ErrorBanner";
 
 const COUNTS = [5, 10, 20, 50] as const;
 const DIFFICULTIES = ["easy", "medium", "hard"] as const;
@@ -13,11 +14,13 @@ export function QuizDialog({
   onOpenChange,
   onGenerate,
   loading,
+  error,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onGenerate: (count: 5 | 10 | 20 | 50, difficulty: "easy" | "medium" | "hard") => void;
   loading: boolean;
+  error: string | null;
 }) {
   const [count, setCount] = useState<5 | 10 | 20 | 50>(10);
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium");
@@ -59,6 +62,7 @@ export function QuizDialog({
               ))}
             </div>
           </div>
+          {error && <ErrorBanner message={error} />}
         </div>
         <DialogFooter>
           <Button disabled={loading} onClick={() => onGenerate(count, difficulty)} className="w-full">

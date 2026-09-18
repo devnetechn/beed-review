@@ -2,12 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { SummarySheet } from "./SummarySheet";
 import { QuizDialog } from "./QuizDialog";
-import { QuizResultsSheet } from "./QuizResultsSheet";
 import { summarizeResourceAction, generateQuizAction } from "@/lib/ai/actions";
-import type { QuizQuestionResult } from "@/lib/ai/types";
 
 export function StudyActions({
   resourceId,
@@ -16,6 +15,7 @@ export function StudyActions({
   resourceId: string;
   showAskAI?: boolean;
 }) {
+  const router = useRouter();
   const [summaryOpen, setSummaryOpen] = useState(false);
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [summaryContent, setSummaryContent] = useState<string | null>(null);
@@ -23,8 +23,6 @@ export function StudyActions({
 
   const [quizDialogOpen, setQuizDialogOpen] = useState(false);
   const [quizLoading, setQuizLoading] = useState(false);
-  const [quizResultsOpen, setQuizResultsOpen] = useState(false);
-  const [quizQuestions, setQuizQuestions] = useState<QuizQuestionResult[]>([]);
   const [quizError, setQuizError] = useState<string | null>(null);
 
   async function handleSummarize() {
@@ -49,9 +47,8 @@ export function StudyActions({
       setQuizError(outcome.error);
       return;
     }
-    setQuizQuestions(outcome.questions);
     setQuizDialogOpen(false);
-    setQuizResultsOpen(true);
+    router.push(`/quiz/${outcome.attemptId}`);
   }
 
   return (
@@ -82,11 +79,6 @@ export function StudyActions({
         onOpenChange={setQuizDialogOpen}
         onGenerate={handleGenerateQuiz}
         loading={quizLoading}
-      />
-      <QuizResultsSheet
-        open={quizResultsOpen}
-        onOpenChange={setQuizResultsOpen}
-        questions={quizQuestions}
         error={quizError}
       />
     </>
