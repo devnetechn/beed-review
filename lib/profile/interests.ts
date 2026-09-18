@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
-import { SUBJECTS } from "@/lib/sources/subjects";
+import { getVisibleSubjects } from "@/lib/sources/visibleSubjects";
 
 export async function saveSubjectInterestsAction(
   subjectSlugs: string[]
@@ -15,7 +15,9 @@ export async function saveSubjectInterestsAction(
     } = await supabase.auth.getUser();
     if (!user) throw new Error("Not authenticated");
 
-    const slugs = subjectSlugs.filter((slug) => SUBJECTS.some((s) => s.slug === slug));
+    const visible = await getVisibleSubjects(user.id);
+    const visibleSlugs = new Set(visible.map((s) => s.slug));
+    const slugs = subjectSlugs.filter((slug) => visibleSlugs.has(slug));
 
     const service = createServiceClient();
     const { data: subjects } = await service.from("subjects").select("id, slug").in("slug", slugs);
