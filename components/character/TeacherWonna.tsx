@@ -124,6 +124,8 @@ export function TeacherWonna({
           height={dims.h}
           className={styles.image}
         />
+        <span className={`${styles.eyelid} ${styles.eyelidLeft}`} aria-hidden="true" />
+        <span className={`${styles.eyelid} ${styles.eyelidRight}`} aria-hidden="true" />
       </div>
       {state === "thinking" && (
         <span className={styles.thinkingDots} aria-hidden="true">

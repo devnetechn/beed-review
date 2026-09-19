@@ -89,6 +89,28 @@
   animation: wonna-nudge 380ms ease-out both;
 }
 
+.eyelid {
+  position: absolute;
+  width: 11%;
+  height: 4.5%;
+  top: 36.2%;
+  border-radius: 50%;
+  background: #b4643d;
+  filter: blur(1.5px);
+  transform: scaleY(0);
+  transform-origin: center;
+  pointer-events: none;
+  animation: wonna-blink 5.2s ease-in-out infinite;
+}
+
+.eyelidLeft {
+  left: 28.5%;
+}
+
+.eyelidRight {
+  left: 60.5%;
+}
+
 .thinkingDots {
   position: absolute;
   right: 6%;
@@ -299,6 +321,18 @@
   }
 }
 
+@keyframes wonna-blink {
+  0%,
+  94%,
+  100% {
+    transform: scaleY(0);
+  }
+  96%,
+  98% {
+    transform: scaleY(1);
+  }
+}
+
 @keyframes wonna-sparkle {
   0% {
     opacity: 0;
@@ -320,6 +354,7 @@
   .glowCorrect,
   .glowIncorrect,
   .floatLayer,
+  .eyelid,
   .dot,
   .sparkle {
     animation: none !important;
