@@ -69,11 +69,55 @@ export async function searchAll(query: string, userId: string | null) {
     .slice(0, 5)
     .map(({ id, slug, name, subject_slug }) => ({ id, slug, name, subject_slug }));
 
+  const resourceHits = (resourcesRes.data ?? []) as ResourceHit[];
+  const resources = await filterResourcesByScope(supabase, resourceHits, majorId, courseId);
+
   return {
     subjects: ((subjectsRes.data ?? []) as (SubjectHit & { course_id: string | null })[])
       .filter((s) => !s.course_id || s.course_id === courseId)
       .map(({ slug, name }) => ({ slug, name })),
     topics,
-    resources: (resourcesRes.data ?? []) as ResourceHit[],
+    resources,
   };
+}
+
+type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
+
+// A resource is visible if it isn't tied to any topic (nothing to scope it by)
+// or at least one of its topics' subjects is visible to the caller's course/major.
+// This lets a resource linked to topics across multiple courses stay "open" to
+// all of them, instead of being locked to whichever course happened to link it first.
+async function filterResourcesByScope(
+  supabase: SupabaseServerClient,
+  resources: ResourceHit[],
+  majorId: string | null,
+  courseId: string | null
+): Promise<ResourceHit[]> {
+  if (resources.length === 0) return resources;
+
+  const { data: links } = await supabase
+    .from("resource_topics")
+    .select("resource_id, topics!inner(subjects!inner(major_id, course_id))")
+    .in(
+      "resource_id",
+      resources.map((r) => r.id)
+    );
+
+  const scopesByResource = new Map<string, { major_id: string | null; course_id: string | null }[]>();
+  for (const row of links ?? []) {
+    const topic = Array.isArray(row.topics) ? row.topics[0] : row.topics;
+    const subject = topic ? (Array.isArray(topic.subjects) ? topic.subjects[0] : topic.subjects) : null;
+    if (!subject) continue;
+    const list = scopesByResource.get(row.resource_id) ?? [];
+    list.push({ major_id: subject.major_id, course_id: subject.course_id });
+    scopesByResource.set(row.resource_id, list);
+  }
+
+  return resources.filter((r) => {
+    const scopes = scopesByResource.get(r.id);
+    if (!scopes || scopes.length === 0) return true;
+    return scopes.some(
+      (s) => (!s.major_id || s.major_id === majorId) && (!s.course_id || s.course_id === courseId)
+    );
+  });
 }
