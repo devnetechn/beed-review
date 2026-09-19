@@ -1,4 +1,4 @@
-const CACHE_NAME = "beed-review-v2";
+const CACHE_NAME = "beed-review-v3";
 const STABLE_PATHS = [
   "/",
   "/offline",
@@ -41,8 +41,10 @@ self.addEventListener("fetch", (event) => {
       (async () => {
         try {
           const response = await fetch(request);
-          const cache = await caches.open(CACHE_NAME);
-          event.waitUntil(cache.put(request, response.clone()));
+          if (response.ok) {
+            const cache = await caches.open(CACHE_NAME);
+            event.waitUntil(cache.put(request, response.clone()));
+          }
           return response;
         } catch {
           const cached = await caches.match(request);
