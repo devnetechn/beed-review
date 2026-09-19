@@ -15,7 +15,7 @@ const SIZE_MAP = {
 } as const;
 
 const EXPRESSION_IMAGE: Record<TeacherWonnaState, string> = {
-  welcome: "/wonna/wonna-happy.png",
+  welcome: "/wonna/wonna-celebrating.png",
   idle: "/wonna/wonna-idle.png",
   thinking: "/wonna/wonna-thinking.png",
   correct: "/wonna/wonna-celebrating.png",
@@ -117,13 +117,32 @@ export function TeacherWonna({
     >
       <span className={`${styles.glow} ${glowClassName(state)}`} aria-hidden="true" />
       <div className={`${styles.floatLayer} ${styles[phase]}`} onAnimationEnd={handleAnimationEnd}>
-        <Image
-          src={EXPRESSION_IMAGE[state]}
-          alt=""
-          width={dims.w}
-          height={dims.h}
-          className={styles.image}
-        />
+        {state === "welcome" ? (
+          <>
+            <Image
+              src={EXPRESSION_IMAGE[state]}
+              alt=""
+              width={dims.w}
+              height={dims.h}
+              className={`${styles.image} ${styles.armSplitBase}`}
+            />
+            <Image
+              src={EXPRESSION_IMAGE[state]}
+              alt=""
+              width={dims.w}
+              height={dims.h}
+              className={`${styles.image} ${styles.armSplitArm}`}
+            />
+          </>
+        ) : (
+          <Image
+            src={EXPRESSION_IMAGE[state]}
+            alt=""
+            width={dims.w}
+            height={dims.h}
+            className={styles.image}
+          />
+        )}
         <span className={`${styles.eyelid} ${styles.eyelidLeft}`} aria-hidden="true" />
         <span className={`${styles.eyelid} ${styles.eyelidRight}`} aria-hidden="true" />
       </div>

@@ -65,7 +65,7 @@ export default function OnboardingPage() {
   if (step === "welcome") {
     return (
       <div className="flex flex-col items-center space-y-5 text-center">
-        <TeacherWonna state="idle" size="lg" />
+        <TeacherWonna state="welcome" size="lg" />
         <div className="space-y-2">
           <h1 className="text-xl font-bold">Kumusta! Ako si Teacher Wonna 👋</h1>
           <p className="text-sm text-neutral-500">

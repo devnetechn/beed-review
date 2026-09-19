@@ -89,13 +89,30 @@
   animation: wonna-nudge 380ms ease-out both;
 }
 
+.armSplitBase {
+  object-fit: contain;
+  object-position: center top;
+  clip-path: polygon(0% 0%, 69.4% 0%, 69.4% 55.6%, 100% 55.6%, 100% 100%, 0% 100%);
+}
+
+.armSplitArm {
+  position: absolute;
+  top: 0;
+  left: 0;
+  object-fit: contain;
+  object-position: center top;
+  clip-path: polygon(69.4% 0%, 100% 0%, 100% 55.6%, 69.4% 55.6%);
+  transform-origin: 75% 52.2%;
+  animation: wonna-wave 1.7s ease-in-out 2;
+}
+
 .eyelid {
   position: absolute;
   width: 11%;
   height: 4.5%;
-  top: 36.2%;
+  top: 32.5%;
   border-radius: 50%;
-  background: #b4643d;
+  background: #a65d3d;
   filter: blur(1.5px);
   transform: scaleY(0);
   transform-origin: center;
@@ -104,11 +121,11 @@
 }
 
 .eyelidLeft {
-  left: 28.5%;
+  left: 26.3%;
 }
 
 .eyelidRight {
-  left: 60.5%;
+  left: 64.1%;
 }
 
 .thinkingDots {
@@ -321,6 +338,22 @@
   }
 }
 
+@keyframes wonna-wave {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-14deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+  75% {
+    transform: rotate(-8deg);
+  }
+}
+
 @keyframes wonna-blink {
   0%,
   94%,
@@ -355,6 +388,7 @@
   .glowIncorrect,
   .floatLayer,
   .eyelid,
+  .armSplitArm,
   .dot,
   .sparkle {
     animation: none !important;
