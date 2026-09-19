@@ -1,12 +1,34 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-const PROTECTED_PREFIXES = ["/", "/search", "/library", "/quiz", "/tutor", "/subjects", "/topics", "/profile", "/admin"];
+const PROTECTED_PREFIXES = [
+  "/",
+  "/search",
+  "/library",
+  "/quiz",
+  "/tutor",
+  "/subjects",
+  "/topics",
+  "/profile",
+  "/admin",
+  "/onboarding",
+];
+
+// Routes that must stay reachable even for a signed-in user who hasn't
+// finished onboarding (picked a course, accepted the terms) - otherwise
+// they could never reach the page that lets them finish it, or sign out.
+const ONBOARDING_EXEMPT_PREFIXES = ["/onboarding", "/login", "/signup", "/auth", "/terms", "/api"];
+
+function matchesPrefix(pathname: string, prefixes: string[]) {
+  return prefixes.some((p) => pathname === p || (p !== "/" && pathname.startsWith(p + "/")));
+}
 
 function isProtected(pathname: string) {
-  return PROTECTED_PREFIXES.some(
-    (p) => pathname === p || (p !== "/" && pathname.startsWith(p + "/"))
-  );
+  return matchesPrefix(pathname, PROTECTED_PREFIXES);
+}
+
+function isOnboardingExempt(pathname: string) {
+  return matchesPrefix(pathname, ONBOARDING_EXEMPT_PREFIXES);
 }
 
 export async function proxy(request: NextRequest) {
@@ -39,6 +61,20 @@ export async function proxy(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
+  }
+
+  if (user && !isOnboardingExempt(request.nextUrl.pathname)) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("course_id, terms_accepted_at")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (profile && (!profile.course_id || !profile.terms_accepted_at)) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/onboarding";
+      return NextResponse.redirect(url);
+    }
   }
 
   return response;
