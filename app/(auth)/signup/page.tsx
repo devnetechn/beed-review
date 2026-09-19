@@ -99,7 +99,7 @@ export default function SignupPage() {
           className="mx-auto mb-2 rounded-full"
         />
         <h1 className="text-xl font-bold">Create your account</h1>
-        <p className="text-sm text-neutral-500">Start building your BEEd study library</p>
+        <p className="text-sm text-neutral-500">Start building your study library</p>
       </div>
 
       {error && <ErrorBanner message={error} />}

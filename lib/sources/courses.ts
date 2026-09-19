@@ -1,6 +1,7 @@
 export const COURSES = [
   { slug: "beed", name: "BEEd" },
   { slug: "bsed", name: "BSEd" },
+  { slug: "civil-service-exam", name: "Civil Service Exam" },
 ] as const;
 
 export const BSED_MAJORS = [
