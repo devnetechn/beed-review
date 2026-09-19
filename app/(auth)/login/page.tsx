@@ -16,7 +16,7 @@ const OAUTH_ERROR_MESSAGES: Record<string, string> = {
 
 export default function LoginPage() {
   return (
-    <Suspense>
+    <Suspense fallback={null}>
       <LoginPageContent />
     </Suspense>
   );
