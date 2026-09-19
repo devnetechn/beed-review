@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Greeting } from "@/components/common/Greeting";
+import { TeacherWonna } from "@/components/character/TeacherWonna";
 import { getWeakTopics, getRecommendedTopics } from "@/lib/quiz/weakTopics";
 
 export const dynamic = "force-dynamic";
@@ -39,9 +40,12 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <Greeting name={profile?.display_name?.split(" ")[0] ?? null} />
-        <p className="text-neutral-500">What do you want to study?</p>
+      <div className="flex items-center gap-3">
+        <TeacherWonna state="welcome" size="sm" />
+        <div>
+          <Greeting name={profile?.display_name?.split(" ")[0] ?? null} />
+          <p className="text-neutral-500">What do you want to study?</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-3">

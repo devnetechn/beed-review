@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { ErrorBanner } from "@/components/common/ErrorBanner";
 import { TypingIndicator } from "./TypingIndicator";
+import { TeacherWonna } from "@/components/character/TeacherWonna";
 import { startTutorConversationAction, sendTutorMessageAction } from "@/lib/ai/actions";
 
 type Message = { role: "user" | "assistant"; content: string; wantsExtremeQuiz?: boolean };
@@ -71,8 +72,15 @@ export function ChatThread({
 
   return (
     <div className="flex h-[calc(100vh-12rem)] flex-col">
+      <div className="flex items-center gap-3 border-b border-neutral-200 pb-3">
+        <TeacherWonna state={sending ? "thinking" : "idle"} size="sm" />
+        <div>
+          <p className="text-sm font-semibold">Teacher Wonna</p>
+          <p className="text-xs text-neutral-500">Your AI study buddy</p>
+        </div>
+      </div>
       {resourceTitle && (
-        <div className="border-b border-neutral-200 px-1 pb-2 text-xs text-neutral-500">
+        <div className="border-b border-neutral-200 px-1 py-2 text-xs text-neutral-500">
           Chatting about: {resourceTitle}
         </div>
       )}

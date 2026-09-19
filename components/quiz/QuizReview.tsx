@@ -1,4 +1,7 @@
+import { TeacherWonna } from "@/components/character/TeacherWonna";
 import type { QuizQuestionReview } from "@/lib/quiz/types";
+
+const PASS_RATIO = 0.6;
 
 export function QuizReview({
   score,
@@ -9,9 +12,12 @@ export function QuizReview({
   totalQuestions: number;
   questions: QuizQuestionReview[];
 }) {
+  const passed = totalQuestions > 0 && score / totalQuestions >= PASS_RATIO;
+
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border border-neutral-200 p-4 text-center">
+      <div className="flex flex-col items-center gap-2 rounded-lg border border-neutral-200 p-4 text-center">
+        <TeacherWonna state={passed ? "correct" : "incorrect"} size="sm" />
         <p className="text-2xl font-semibold">
           {score} / {totalQuestions}
         </p>

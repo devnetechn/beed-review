@@ -7,11 +7,13 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ErrorBanner } from "@/components/common/ErrorBanner";
+import { TeacherWonna } from "@/components/character/TeacherWonna";
 import { COURSES, BSED_MAJORS } from "@/lib/sources/courses";
 import { completeOnboarding } from "@/lib/onboarding/actions";
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const [step, setStep] = useState<"form" | "welcome">("form");
   const [courseSlug, setCourseSlug] = useState<string | null>(null);
   const [majorSlug, setMajorSlug] = useState<string | null>(null);
   const [agreed, setAgreed] = useState(false);
@@ -45,8 +47,7 @@ export default function OnboardingPage() {
       setError(outcome.error);
       return;
     }
-    router.push("/");
-    router.refresh();
+    setStep("welcome");
   }
 
   async function handleSignOut() {
@@ -54,6 +55,30 @@ export default function OnboardingPage() {
     await supabase.auth.signOut();
     router.push("/login");
     router.refresh();
+  }
+
+  function handleContinue() {
+    router.push("/");
+    router.refresh();
+  }
+
+  if (step === "welcome") {
+    return (
+      <div className="flex flex-col items-center space-y-5 text-center">
+        <TeacherWonna state="idle" size="lg" />
+        <div className="space-y-2">
+          <h1 className="text-xl font-bold">Kumusta! Ako si Teacher Wonna 👋</h1>
+          <p className="text-sm text-neutral-500">
+            Ako ang iyong AI study buddy dito sa WonnaLearn. Tutulungan kita mag-review gamit ang
+            AI Tutor chat, mga quiz, at mga resources — anytime, anywhere.
+          </p>
+          <p className="text-sm text-neutral-500">Ready ka na ba? Simulan na natin!</p>
+        </div>
+        <Button className="w-full" onClick={handleContinue}>
+          Let&apos;s get started
+        </Button>
+      </div>
+    );
   }
 
   return (

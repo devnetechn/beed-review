@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Trophy } from "lucide-react";
+import { TeacherWonna } from "@/components/character/TeacherWonna";
 import type { QuizQuestionReview } from "@/lib/quiz/types";
 
 const PASS_RATIO = 0.6;
@@ -41,6 +42,7 @@ export function ExtremeQuizResult({
   return (
     <div className="animate-in fade-in zoom-in-95 space-y-4 duration-300">
       <div className="flex flex-col items-center gap-2 rounded-xl border border-orange-200 bg-orange-50 py-8 text-center">
+        <TeacherWonna state={passed ? "correct" : "incorrect"} size="sm" />
         {passed && <Trophy className="size-10 text-orange-600" />}
         <p className="text-4xl font-bold text-orange-900">
           {displayedScore} / {totalQuestions}
