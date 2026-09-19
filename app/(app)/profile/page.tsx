@@ -1,8 +1,11 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { BADGES } from "@/lib/gamification/badges";
 import { SignOutButton } from "@/components/profile/SignOutButton";
+import { FeedbackButton } from "@/components/profile/FeedbackButton";
 import { EmptyState } from "@/components/common/EmptyState";
-import { Flame, Lock } from "lucide-react";
+import { isOwnerEmail } from "@/lib/admin";
+import { Flame, Lock, Inbox } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -109,6 +112,18 @@ export default async function ProfilePage() {
           })}
         </div>
       </div>
+
+      <FeedbackButton />
+
+      {isOwnerEmail(user.email) && (
+        <Link
+          href="/admin/feedback"
+          className="flex items-center gap-2 rounded-xl border border-neutral-200 p-4 text-sm font-medium"
+        >
+          <Inbox className="size-4" />
+          Feedback Inbox
+        </Link>
+      )}
 
       <SignOutButton />
     </div>
