@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
-import { isOwnerEmail } from "@/lib/admin";
 import { EmptyState } from "@/components/common/EmptyState";
 
 export const dynamic = "force-dynamic";
@@ -11,7 +10,17 @@ export default async function FeedbackInboxPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!isOwnerEmail(user?.email)) {
+  if (!user) {
+    return <EmptyState message="Not authorized." />;
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (!profile?.is_admin) {
     return <EmptyState message="Not authorized." />;
   }
 

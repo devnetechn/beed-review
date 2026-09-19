@@ -4,7 +4,6 @@ import { BADGES } from "@/lib/gamification/badges";
 import { SignOutButton } from "@/components/profile/SignOutButton";
 import { FeedbackButton } from "@/components/profile/FeedbackButton";
 import { EmptyState } from "@/components/common/EmptyState";
-import { isOwnerEmail } from "@/lib/admin";
 import { Flame, Lock, Inbox } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -23,7 +22,7 @@ export default async function ProfilePage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("display_name, points, current_streak, longest_streak")
+    .select("display_name, points, current_streak, longest_streak, is_admin")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -115,7 +114,7 @@ export default async function ProfilePage() {
 
       <FeedbackButton />
 
-      {isOwnerEmail(user.email) && (
+      {profile?.is_admin && (
         <Link
           href="/admin/feedback"
           className="flex items-center gap-2 rounded-xl border border-neutral-200 p-4 text-sm font-medium"
