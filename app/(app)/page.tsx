@@ -2,15 +2,10 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Greeting } from "@/components/common/Greeting";
 import { getWeakTopics, getRecommendedTopics } from "@/lib/quiz/weakTopics";
 
 export const dynamic = "force-dynamic";
-
-function greeting(name: string | null) {
-  const hour = new Date().getHours();
-  const base = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-  return name ? `${base}, ${name}.` : `${base}.`;
-}
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -45,9 +40,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold">
-          {greeting(profile?.display_name?.split(" ")[0] ?? null)}
-        </h1>
+        <Greeting name={profile?.display_name?.split(" ")[0] ?? null} />
         <p className="text-neutral-500">What do you want to study?</p>
       </div>
 
