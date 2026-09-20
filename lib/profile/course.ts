@@ -13,17 +13,19 @@ export async function updateCourseAndMajor(
   } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("course_id")
     .eq("id", user.id)
     .maybeSingle();
+  if (profileError) return { error: "Couldn't verify your profile. Try again." };
 
   if (profile?.course_id) {
-    const { count } = await supabase
+    const { count, error: badgeCountError } = await supabase
       .from("user_badges")
       .select("badge_id", { count: "exact", head: true })
       .eq("user_id", user.id);
+    if (badgeCountError) return { error: "Couldn't verify your badges. Try again." };
     if ((count ?? 0) < BADGES.length) {
       return { error: `Complete all ${BADGES.length} badges to unlock changing your course.` };
     }
