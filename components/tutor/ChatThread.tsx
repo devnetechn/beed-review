@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import ReactMarkdown, { type Components } from "react-markdown";
 import { Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,19 @@ import { TeacherWonna } from "@/components/character/TeacherWonna";
 import { startTutorConversationAction, sendTutorMessageAction } from "@/lib/ai/actions";
 
 type Message = { role: "user" | "assistant"; content: string; wantsExtremeQuiz?: boolean };
+
+const MARKDOWN_COMPONENTS: Components = {
+  p: (props) => <p className="mb-2 last:mb-0" {...props} />,
+  ul: (props) => <ul className="mb-2 list-disc space-y-1 pl-4 last:mb-0" {...props} />,
+  ol: (props) => <ol className="mb-2 list-decimal space-y-1 pl-4 last:mb-0" {...props} />,
+  li: (props) => <li {...props} />,
+  strong: (props) => <strong className="font-semibold" {...props} />,
+  h1: (props) => <p className="mb-2 font-semibold last:mb-0" {...props} />,
+  h2: (props) => <p className="mb-2 font-semibold last:mb-0" {...props} />,
+  h3: (props) => <p className="mb-2 font-semibold last:mb-0" {...props} />,
+  a: (props) => <a className="underline" target="_blank" rel="noopener noreferrer" {...props} />,
+  code: (props) => <code className="rounded bg-black/10 px-1 py-0.5 text-xs" {...props} />,
+};
 
 export function ChatThread({
   resourceId,
@@ -98,7 +112,11 @@ export function ChatThread({
                   m.role === "user" ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-900"
                 }`}
               >
-                {m.content}
+                {m.role === "assistant" ? (
+                  <ReactMarkdown components={MARKDOWN_COMPONENTS}>{m.content}</ReactMarkdown>
+                ) : (
+                  m.content
+                )}
               </div>
             </div>
             {m.role === "assistant" && m.wantsExtremeQuiz && (
