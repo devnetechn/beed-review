@@ -97,6 +97,8 @@ export default async function ProfilePage() {
         currentCourseName={courseRow?.name ?? null}
         currentMajorSlug={majorRow?.slug ?? null}
         currentMajorName={majorRow?.name ?? null}
+        earnedBadgeCount={earnedIds.size}
+        totalBadgeCount={BADGES.length}
       />
 
       <div className="space-y-3">
