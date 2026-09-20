@@ -14,11 +14,15 @@ export function CourseMajorSection({
   currentCourseName,
   currentMajorSlug,
   currentMajorName,
+  earnedBadgeCount,
+  totalBadgeCount,
 }: {
   currentCourseSlug: string | null;
   currentCourseName: string | null;
   currentMajorSlug: string | null;
   currentMajorName: string | null;
+  earnedBadgeCount: number;
+  totalBadgeCount: number;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -65,6 +69,8 @@ export function CourseMajorSection({
   const changingCourse =
     currentCourseSlug !== null && courseSlug !== null && courseSlug !== currentCourseSlug;
 
+  const locked = currentCourseSlug !== null && earnedBadgeCount < totalBadgeCount;
+
   return (
     <div className="flex items-center justify-between rounded-xl border border-neutral-200 p-4">
       <div>
@@ -74,9 +80,21 @@ export function CourseMajorSection({
           {currentMajorName && ` — ${currentMajorName}`}
         </p>
       </div>
-      <Button variant="outline" size="sm" onClick={() => handleOpenChange(true)}>
-        Change
-      </Button>
+      <div className="text-right">
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={locked}
+          onClick={() => handleOpenChange(true)}
+        >
+          Change
+        </Button>
+        {locked && (
+          <p className="mt-1 text-xs text-neutral-400">
+            {earnedBadgeCount}/{totalBadgeCount} badges to unlock
+          </p>
+        )}
+      </div>
 
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent>
