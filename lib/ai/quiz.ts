@@ -2,7 +2,7 @@ import { getOpenAIClient } from "./client";
 import { QuizResponseSchema, type QuizQuestionResult } from "./types";
 import { fetchContent } from "./fetchContent";
 import { createServiceClient } from "@/lib/supabase/service";
-import { COURSE_EXAM_CONTEXT, DEFAULT_COURSE_EXAM_CONTEXT } from "@/lib/sources/courses";
+import { resolveCourseLabel } from "@/lib/sources/courses";
 
 const QUIZ_JSON_SCHEMA = {
   type: "object",
@@ -27,11 +27,6 @@ const QUIZ_JSON_SCHEMA = {
 } as const;
 
 export type QuizDifficulty = "easy" | "medium" | "hard" | "extreme";
-
-function resolveCourseLabel(courseSlug: string | null | undefined): string {
-  if (!courseSlug) return DEFAULT_COURSE_EXAM_CONTEXT;
-  return COURSE_EXAM_CONTEXT[courseSlug] ?? DEFAULT_COURSE_EXAM_CONTEXT;
-}
 
 function buildQuizSystemPrompt(count: number, difficulty: QuizDifficulty, courseLabel: string): string {
   const extremeInstruction =

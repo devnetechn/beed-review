@@ -20,3 +20,13 @@ export const COURSE_EXAM_CONTEXT: Record<string, string> = {
 };
 
 export const DEFAULT_COURSE_EXAM_CONTEXT = COURSE_EXAM_CONTEXT.beed;
+
+export function resolveCourseLabel(courseSlug: string | null | undefined): string {
+  if (!courseSlug) return DEFAULT_COURSE_EXAM_CONTEXT;
+  return COURSE_EXAM_CONTEXT[courseSlug] ?? DEFAULT_COURSE_EXAM_CONTEXT;
+}
+
+export function resolveCourseName(courseSlug: string | null | undefined): string {
+  if (!courseSlug) return "course";
+  return COURSES.find((c) => c.slug === courseSlug)?.name ?? "course";
+}

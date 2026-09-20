@@ -1,6 +1,6 @@
 import { createServiceClient } from "@/lib/supabase/service";
 import { getVisibleSubjects } from "@/lib/sources/visibleSubjects";
-import { COURSE_EXAM_CONTEXT, DEFAULT_COURSE_EXAM_CONTEXT } from "@/lib/sources/courses";
+import { resolveCourseLabel } from "@/lib/sources/courses";
 import { findCachedResults } from "./cache";
 import { checkRateLimit } from "./rateLimit";
 import { callOpenAIResearch } from "./callOpenAI";
@@ -23,9 +23,7 @@ async function getCourseContext(
   const courseId = profile?.course_id ?? null;
   const majorId = profile?.major_id ?? null;
   const courseRow = Array.isArray(profile?.courses) ? profile?.courses[0] : profile?.courses;
-  const courseLabel = courseRow?.slug
-    ? COURSE_EXAM_CONTEXT[courseRow.slug] ?? DEFAULT_COURSE_EXAM_CONTEXT
-    : DEFAULT_COURSE_EXAM_CONTEXT;
+  const courseLabel = resolveCourseLabel(courseRow?.slug);
 
   return { courseId, majorId, courseLabel };
 }
