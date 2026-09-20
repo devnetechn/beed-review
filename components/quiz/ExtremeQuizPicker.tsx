@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import { ThinkingWonna } from "@/components/character/ThinkingWonna";
 import { ErrorBanner } from "@/components/common/ErrorBanner";
 import { SUBJECTS } from "@/lib/sources/subjects";
 import { startExtremeQuizAction } from "@/lib/quiz/actions";
@@ -85,37 +85,33 @@ export function ExtremeQuizPicker() {
         </div>
       )}
 
-      {step === "topic" && (
-        <div className="space-y-2">
-          <Button variant="ghost" size="sm" onClick={() => setStep("subject")}>
-            ← Back to subjects
-          </Button>
-          <p className="text-sm font-medium">Pick a topic to start</p>
-          {topics.length === 0 ? (
-            <p className="text-sm text-neutral-400">No topics found for this subject yet.</p>
-          ) : (
-            <div className="grid grid-cols-1 gap-2">
-              {topics.map((t) => (
-                <Button
-                  key={t.id}
-                  variant="outline"
-                  className="justify-start"
-                  disabled={startingTopicId !== null}
-                  onClick={() => handlePickTopic(t.id)}
-                >
-                  {startingTopicId === t.id ? (
-                    <span className="flex items-center gap-2">
-                      <Spinner /> Generating your Extreme Quiz…
-                    </span>
-                  ) : (
-                    t.name
-                  )}
-                </Button>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+      {step === "topic" &&
+        (startingTopicId !== null ? (
+          <ThinkingWonna message="Generating your Extreme Quiz…" />
+        ) : (
+          <div className="space-y-2">
+            <Button variant="ghost" size="sm" onClick={() => setStep("subject")}>
+              ← Back to subjects
+            </Button>
+            <p className="text-sm font-medium">Pick a topic to start</p>
+            {topics.length === 0 ? (
+              <p className="text-sm text-neutral-400">No topics found for this subject yet.</p>
+            ) : (
+              <div className="grid grid-cols-1 gap-2">
+                {topics.map((t) => (
+                  <Button
+                    key={t.id}
+                    variant="outline"
+                    className="justify-start"
+                    onClick={() => handlePickTopic(t.id)}
+                  >
+                    {t.name}
+                  </Button>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
     </div>
   );
 }
