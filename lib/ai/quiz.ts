@@ -69,36 +69,42 @@ export async function generateQuiz(
 
   const content = await fetchContent(resource);
 
-  const { data: linkedTopicRow } = await supabase
-    .from("resource_topics")
-    .select("topics(subjects(courses(slug)))")
-    .eq("resource_id", resourceId)
-    .limit(1)
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("courses(slug)")
+    .eq("id", userId)
     .maybeSingle();
+  const profileCourse = Array.isArray(profile?.courses) ? profile?.courses[0] : profile?.courses;
+  let courseSlug = profileCourse?.slug;
 
-  const linkedTopic = Array.isArray(linkedTopicRow?.topics)
-    ? linkedTopicRow?.topics[0]
-    : linkedTopicRow?.topics;
-  const linkedSubject = linkedTopic
-    ? Array.isArray(linkedTopic.subjects)
-      ? linkedTopic.subjects[0]
-      : linkedTopic.subjects
-    : null;
-  const linkedCourse = linkedSubject
-    ? Array.isArray(linkedSubject.courses)
-      ? linkedSubject.courses[0]
-      : linkedSubject.courses
-    : null;
-
-  let courseSlug = linkedCourse?.slug;
   if (!courseSlug) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("courses(slug)")
-      .eq("id", userId)
+    // Fallback for the rare case a profile has no course set: use the
+    // resource's own classification instead of defaulting to BEEd blind.
+    // A resource shared across courses (upserted by URL) can carry links
+    // to more than one course's topics, so this is a best-effort guess —
+    // resolving from the requesting user's own course (above) is always
+    // preferred when available.
+    const { data: linkedTopicRow } = await supabase
+      .from("resource_topics")
+      .select("topics(subjects(courses(slug)))")
+      .eq("resource_id", resourceId)
+      .limit(1)
       .maybeSingle();
-    const profileCourse = Array.isArray(profile?.courses) ? profile?.courses[0] : profile?.courses;
-    courseSlug = profileCourse?.slug;
+
+    const linkedTopic = Array.isArray(linkedTopicRow?.topics)
+      ? linkedTopicRow?.topics[0]
+      : linkedTopicRow?.topics;
+    const linkedSubject = linkedTopic
+      ? Array.isArray(linkedTopic.subjects)
+        ? linkedTopic.subjects[0]
+        : linkedTopic.subjects
+      : null;
+    const linkedCourse = linkedSubject
+      ? Array.isArray(linkedSubject.courses)
+        ? linkedSubject.courses[0]
+        : linkedSubject.courses
+      : null;
+    courseSlug = linkedCourse?.slug;
   }
   const courseLabel = resolveCourseLabel(courseSlug);
 
