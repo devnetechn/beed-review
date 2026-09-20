@@ -13,6 +13,8 @@ function slugify(text: string): string {
 export async function persistResults(
   query: string,
   userId: string,
+  courseId: string | null,
+  allowedSubjectSlugs: Set<string>,
   results: ResearchedResource[]
 ): Promise<ResourceHit[]> {
   const supabase = createServiceClient();
@@ -43,33 +45,35 @@ export async function persistResults(
 
     if (error || !resource) continue;
 
-    const { data: subject } = await supabase
-      .from("subjects")
-      .select("id")
-      .eq("slug", r.subject_slug)
-      .single();
+    if (allowedSubjectSlugs.has(r.subject_slug)) {
+      const { data: subject } = await supabase
+        .from("subjects")
+        .select("id")
+        .eq("slug", r.subject_slug)
+        .single();
 
-    if (subject) {
-      for (const topicName of r.topics) {
-        const topicSlug = slugify(topicName);
-        if (!topicSlug) continue;
+      if (subject) {
+        for (const topicName of r.topics) {
+          const topicSlug = slugify(topicName);
+          if (!topicSlug) continue;
 
-        const { data: topic } = await supabase
-          .from("topics")
-          .upsert(
-            { subject_id: subject.id, slug: topicSlug, name: topicName },
-            { onConflict: "subject_id,slug" }
-          )
-          .select("id")
-          .single();
-
-        if (topic) {
-          await supabase
-            .from("resource_topics")
+          const { data: topic } = await supabase
+            .from("topics")
             .upsert(
-              { resource_id: resource.id, topic_id: topic.id },
-              { onConflict: "resource_id,topic_id" }
-            );
+              { subject_id: subject.id, slug: topicSlug, name: topicName },
+              { onConflict: "subject_id,slug" }
+            )
+            .select("id")
+            .single();
+
+          if (topic) {
+            await supabase
+              .from("resource_topics")
+              .upsert(
+                { resource_id: resource.id, topic_id: topic.id },
+                { onConflict: "resource_id,topic_id" }
+              );
+          }
         }
       }
     }
@@ -80,7 +84,7 @@ export async function persistResults(
 
   const { data: queryRow } = await supabase
     .from("research_queries")
-    .insert({ user_id: userId, query_text: query })
+    .insert({ user_id: userId, query_text: query, course_id: courseId })
     .select("id")
     .single();
 
