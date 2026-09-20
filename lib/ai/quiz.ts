@@ -2,6 +2,7 @@ import { getOpenAIClient } from "./client";
 import { QuizResponseSchema, type QuizQuestionResult } from "./types";
 import { fetchContent } from "./fetchContent";
 import { createServiceClient } from "@/lib/supabase/service";
+import { COURSE_EXAM_CONTEXT, DEFAULT_COURSE_EXAM_CONTEXT } from "@/lib/sources/courses";
 
 const QUIZ_JSON_SCHEMA = {
   type: "object",
@@ -27,12 +28,17 @@ const QUIZ_JSON_SCHEMA = {
 
 export type QuizDifficulty = "easy" | "medium" | "hard" | "extreme";
 
-function buildQuizSystemPrompt(count: number, difficulty: QuizDifficulty): string {
+function resolveCourseLabel(courseSlug: string | null | undefined): string {
+  if (!courseSlug) return DEFAULT_COURSE_EXAM_CONTEXT;
+  return COURSE_EXAM_CONTEXT[courseSlug] ?? DEFAULT_COURSE_EXAM_CONTEXT;
+}
+
+function buildQuizSystemPrompt(count: number, difficulty: QuizDifficulty, courseLabel: string): string {
   const extremeInstruction =
     difficulty === "extreme"
       ? " This is EXTREME difficulty: write questions that would challenge a top-performing reviewee — trickier distractors, less forgiving phrasing, edge-case scenarios, and details that require precise recall, not just general familiarity."
       : "";
-  return `You are a quiz question generator for a Bachelor of Elementary Education (BEEd) exam-prep app. Generate exactly ${count} multiple-choice practice questions at ${difficulty} difficulty, based on the given resource.${extremeInstruction} Each question needs exactly 4 choices, one correct_answer that exactly matches one of the choices verbatim, and a short explanation of why it's correct. These are AI-generated practice questions, not official LET exam questions — write them to be genuinely useful for review, grounded in the given content, not generic trivia.`;
+  return `You are a quiz question generator for ${courseLabel}. Generate exactly ${count} multiple-choice practice questions at ${difficulty} difficulty, based on the given resource.${extremeInstruction} Each question needs exactly 4 choices, one correct_answer that exactly matches one of the choices verbatim, and a short explanation of why it's correct. These are AI-generated practice questions, not official exam questions — write them to be genuinely useful for review, grounded in the given content, not generic trivia.`;
 }
 
 function buildQuizUserPrompt(
@@ -63,10 +69,32 @@ export async function generateQuiz(
 
   const content = await fetchContent(resource);
 
+  const { data: linkedTopicRow } = await supabase
+    .from("resource_topics")
+    .select("topics(subjects(courses(slug)))")
+    .eq("resource_id", resourceId)
+    .limit(1)
+    .maybeSingle();
+
+  const linkedTopic = Array.isArray(linkedTopicRow?.topics)
+    ? linkedTopicRow?.topics[0]
+    : linkedTopicRow?.topics;
+  const linkedSubject = linkedTopic
+    ? Array.isArray(linkedTopic.subjects)
+      ? linkedTopic.subjects[0]
+      : linkedTopic.subjects
+    : null;
+  const linkedCourse = linkedSubject
+    ? Array.isArray(linkedSubject.courses)
+      ? linkedSubject.courses[0]
+      : linkedSubject.courses
+    : null;
+  const courseLabel = resolveCourseLabel(linkedCourse?.slug);
+
   const response = await getOpenAIClient().responses.create({
     model: process.env.OPENAI_MODEL!,
     input: [
-      { role: "system", content: buildQuizSystemPrompt(count, difficulty) },
+      { role: "system", content: buildQuizSystemPrompt(count, difficulty, courseLabel) },
       { role: "user", content: buildQuizUserPrompt(resource, content) },
     ],
     text: {
@@ -125,12 +153,13 @@ export async function generateQuiz(
 function buildTopicQuizUserPrompt(
   topicName: string,
   subjectName: string,
-  contextLines: string[]
+  contextLines: string[],
+  courseLabel: string
 ): string {
   const context =
     contextLines.length > 0
       ? contextLines.join("\n")
-      : "(no linked resources yet — generate from general BEEd/LET curriculum knowledge of this topic)";
+      : `(no linked resources yet — generate from general knowledge of this subject's curriculum, appropriate for ${courseLabel})`;
   return `Topic: "${topicName}" (Subject: ${subjectName})\n\nRelated resources:\n${context}\n\nGenerate the questions for this topic.`;
 }
 
@@ -144,12 +173,18 @@ export async function generateTopicQuiz(
 
   const { data: topic } = await supabase
     .from("topics")
-    .select("name, subjects(name)")
+    .select("name, subjects(name, courses(slug))")
     .eq("id", topicId)
     .single();
 
   if (!topic) throw new Error("Topic not found");
   const subject = Array.isArray(topic.subjects) ? topic.subjects[0] : topic.subjects;
+  const topicCourseRow = subject
+    ? Array.isArray(subject.courses)
+      ? subject.courses[0]
+      : subject.courses
+    : null;
+  const courseLabel = resolveCourseLabel(topicCourseRow?.slug);
 
   const { data: linkedResources } = await supabase
     .from("resource_topics")
@@ -165,10 +200,15 @@ export async function generateTopicQuiz(
   const response = await getOpenAIClient().responses.create({
     model: process.env.OPENAI_MODEL!,
     input: [
-      { role: "system", content: buildQuizSystemPrompt(count, difficulty) },
+      { role: "system", content: buildQuizSystemPrompt(count, difficulty, courseLabel) },
       {
         role: "user",
-        content: buildTopicQuizUserPrompt(topic.name, subject?.name ?? "General", contextLines),
+        content: buildTopicQuizUserPrompt(
+          topic.name,
+          subject?.name ?? "General",
+          contextLines,
+          courseLabel
+        ),
       },
     ],
     text: {
@@ -215,12 +255,13 @@ export async function generateTopicQuiz(
 function buildSubjectQuizUserPrompt(
   subjectName: string,
   topicNames: string[],
-  contextLines: string[]
+  contextLines: string[],
+  courseLabel: string
 ): string {
   const context =
     contextLines.length > 0
       ? contextLines.join("\n")
-      : "(no linked resources yet — generate from general BEEd/LET curriculum knowledge of this subject)";
+      : `(no linked resources yet — generate from general knowledge of this subject's curriculum, appropriate for ${courseLabel})`;
   return `Subject: "${subjectName}"\n\nTopics covered in this subject:\n${topicNames.map((t) => `- ${t}`).join("\n")}\n\nRelated resources:\n${context}\n\nGenerate the questions spanning a mix of the topics above, not just one of them.`;
 }
 
@@ -234,11 +275,13 @@ export async function generateSubjectQuiz(
 
   const { data: subject } = await supabase
     .from("subjects")
-    .select("name")
+    .select("name, courses(slug)")
     .eq("id", subjectId)
     .single();
 
   if (!subject) throw new Error("Subject not found");
+  const subjectCourseRow = Array.isArray(subject.courses) ? subject.courses[0] : subject.courses;
+  const courseLabel = resolveCourseLabel(subjectCourseRow?.slug);
 
   const { data: topics } = await supabase
     .from("topics")
@@ -263,13 +306,14 @@ export async function generateSubjectQuiz(
   const response = await getOpenAIClient().responses.create({
     model: process.env.OPENAI_MODEL!,
     input: [
-      { role: "system", content: buildQuizSystemPrompt(count, difficulty) },
+      { role: "system", content: buildQuizSystemPrompt(count, difficulty, courseLabel) },
       {
         role: "user",
         content: buildSubjectQuizUserPrompt(
           subject.name,
           topics.map((t) => t.name),
-          contextLines
+          contextLines,
+          courseLabel
         ),
       },
     ],
