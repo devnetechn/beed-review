@@ -62,7 +62,7 @@ export async function sendTutorMessageAction(
 ): Promise<{ reply: string; wantsExtremeQuiz: boolean } | { error: string }> {
   try {
     const user = await requireUser();
-    const result = await sendTutorMessage(conversationId, resourceId, message);
+    const result = await sendTutorMessage(conversationId, resourceId, user.id, message);
     await recordActivity(user.id, "tutor_message");
     return result;
   } catch {

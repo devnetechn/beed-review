@@ -126,7 +126,7 @@ export function ChatThread({
       {error && <ErrorBanner message={error} />}
       <div className="flex gap-2 border-t border-neutral-200 pt-2">
         <Input
-          placeholder="Ask about BEEd/LET topics…"
+          placeholder="Ask about your course topics…"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && !loading && handleSend()}

@@ -25,8 +25,21 @@ export type QuizQuestion = z.infer<typeof QuizQuestionSchema>;
 
 export type QuizQuestionResult = QuizQuestion & { id: string };
 
+export const TUTOR_CATEGORY_VALUES = [
+  "COURSE_RELATED",
+  "RANDOM_TRIVIA",
+  "OUT_OF_COURSE",
+  "UNSAFE_OR_RESTRICTED",
+  "SYSTEM_OR_PROMPT_INJECTION",
+] as const;
+export type TutorCategory = (typeof TUTOR_CATEGORY_VALUES)[number];
+
 export const TutorReplySchema = z.object({
-  reply: z.string().min(1),
+  category: z.enum(TUTOR_CATEGORY_VALUES),
+  // Empty for every category except COURSE_RELATED — the application
+  // substitutes its own fixed message for the rest, so the model isn't
+  // required to fill this in for them.
+  reply: z.string(),
   wants_extreme_quiz: z.boolean(),
 });
 export type TutorReply = z.infer<typeof TutorReplySchema>;
