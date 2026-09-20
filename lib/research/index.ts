@@ -12,30 +12,31 @@ export class ResearchFailedError extends Error {}
 
 async function getCourseContext(
   userId: string
-): Promise<{ courseId: string | null; courseLabel: string }> {
+): Promise<{ courseId: string | null; majorId: string | null; courseLabel: string }> {
   const supabase = createServiceClient();
   const { data: profile } = await supabase
     .from("profiles")
-    .select("course_id, courses(slug)")
+    .select("course_id, major_id, courses(slug)")
     .eq("id", userId)
     .maybeSingle();
 
   const courseId = profile?.course_id ?? null;
+  const majorId = profile?.major_id ?? null;
   const courseRow = Array.isArray(profile?.courses) ? profile?.courses[0] : profile?.courses;
   const courseLabel = courseRow?.slug
     ? COURSE_EXAM_CONTEXT[courseRow.slug] ?? DEFAULT_COURSE_EXAM_CONTEXT
     : DEFAULT_COURSE_EXAM_CONTEXT;
 
-  return { courseId, courseLabel };
+  return { courseId, majorId, courseLabel };
 }
 
 export async function researchTopic(query: string, userId: string): Promise<ResourceHit[]> {
   const trimmed = query.trim();
   if (!trimmed) return [];
 
-  const { courseId, courseLabel } = await getCourseContext(userId);
+  const { courseId, majorId, courseLabel } = await getCourseContext(userId);
 
-  const cached = await findCachedResults(trimmed, courseId);
+  const cached = await findCachedResults(trimmed, courseId, majorId);
   if (cached) return cached;
 
   const allowed = await checkRateLimit(userId);
@@ -58,5 +59,5 @@ export async function researchTopic(query: string, userId: string): Promise<Reso
   if (results.length === 0) return [];
 
   const allowedSlugs = new Set(subjects.map((s) => s.slug));
-  return persistResults(trimmed, userId, courseId, allowedSlugs, results);
+  return persistResults(trimmed, userId, courseId, majorId, allowedSlugs, results);
 }
