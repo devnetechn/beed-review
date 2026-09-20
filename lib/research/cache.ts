@@ -5,7 +5,8 @@ const CACHE_FRESHNESS_DAYS = 30;
 
 export async function findCachedResults(
   query: string,
-  courseId: string | null
+  courseId: string | null,
+  majorId: string | null
 ): Promise<ResourceHit[] | null> {
   const supabase = createServiceClient();
   const normalized = query.trim();
@@ -13,15 +14,19 @@ export async function findCachedResults(
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - CACHE_FRESHNESS_DAYS);
 
-  const base = supabase
+  let base = supabase
     .from("research_queries")
     .select("id")
     .ilike("query_text", normalized)
     .gte("created_at", cutoff.toISOString());
 
-  const { data: matchingQuery } = courseId
-    ? await base.eq("course_id", courseId).order("created_at", { ascending: false }).limit(1).maybeSingle()
-    : await base.is("course_id", null).order("created_at", { ascending: false }).limit(1).maybeSingle();
+  base = courseId ? base.eq("course_id", courseId) : base.is("course_id", null);
+  base = majorId ? base.eq("major_id", majorId) : base.is("major_id", null);
+
+  const { data: matchingQuery } = await base
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
   if (!matchingQuery) return null;
 

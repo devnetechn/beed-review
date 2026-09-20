@@ -14,6 +14,7 @@ export async function persistResults(
   query: string,
   userId: string,
   courseId: string | null,
+  majorId: string | null,
   allowedSubjectSlugs: Set<string>,
   results: ResearchedResource[]
 ): Promise<ResourceHit[]> {
@@ -84,7 +85,7 @@ export async function persistResults(
 
   const { data: queryRow } = await supabase
     .from("research_queries")
-    .insert({ user_id: userId, query_text: query, course_id: courseId })
+    .insert({ user_id: userId, query_text: query, course_id: courseId, major_id: majorId })
     .select("id")
     .single();
 
