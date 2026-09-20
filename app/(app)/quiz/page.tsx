@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { ThinkingWonna } from "@/components/character/ThinkingWonna";
 import { ErrorBanner } from "@/components/common/ErrorBanner";
 import { startTopicQuizAction, startSubjectQuizAction } from "@/lib/quiz/actions";
 
@@ -166,64 +167,61 @@ function QuizPageContent() {
         </div>
       )}
 
-      {step === "config" && (
-        <div className="space-y-4">
-          {presetTopicId ? (
-            <Button variant="ghost" size="sm" onClick={() => router.push("/search")}>
-              ← Back to search
-            </Button>
-          ) : (
-            <Button variant="ghost" size="sm" onClick={() => setStep("topic")}>
-              ← Back to topics
-            </Button>
-          )}
-          {isOverall && subjectName && (
-            <p className="text-sm font-medium">Overall: {subjectName}</p>
-          )}
-          {!isOverall && presetTopicName && (
-            <p className="text-sm font-medium">Topic: {presetTopicName}</p>
-          )}
-          <div>
-            <p className="mb-2 text-sm font-medium">Number of questions</p>
-            <div className="flex gap-2">
-              {COUNTS.map((c) => (
-                <Button
-                  key={c}
-                  size="sm"
-                  variant={count === c ? "default" : "outline"}
-                  onClick={() => setCount(c)}
-                >
-                  {c}
-                </Button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <p className="mb-2 text-sm font-medium">Difficulty</p>
-            <div className="flex gap-2">
-              {DIFFICULTIES.map((d) => (
-                <Button
-                  key={d}
-                  size="sm"
-                  variant={difficulty === d ? "default" : "outline"}
-                  onClick={() => setDifficulty(d)}
-                >
-                  {d}
-                </Button>
-              ))}
-            </div>
-          </div>
-          <Button className="w-full" disabled={starting} onClick={handleStart}>
-            {starting ? (
-              <span className="flex items-center gap-2">
-                <Spinner /> Generating quiz…
-              </span>
+      {step === "config" &&
+        (starting ? (
+          <ThinkingWonna message="Generating your quiz…" />
+        ) : (
+          <div className="space-y-4">
+            {presetTopicId ? (
+              <Button variant="ghost" size="sm" onClick={() => router.push("/search")}>
+                ← Back to search
+              </Button>
             ) : (
-              "Start Quiz"
+              <Button variant="ghost" size="sm" onClick={() => setStep("topic")}>
+                ← Back to topics
+              </Button>
             )}
-          </Button>
-        </div>
-      )}
+            {isOverall && subjectName && (
+              <p className="text-sm font-medium">Overall: {subjectName}</p>
+            )}
+            {!isOverall && presetTopicName && (
+              <p className="text-sm font-medium">Topic: {presetTopicName}</p>
+            )}
+            <div>
+              <p className="mb-2 text-sm font-medium">Number of questions</p>
+              <div className="flex gap-2">
+                {COUNTS.map((c) => (
+                  <Button
+                    key={c}
+                    size="sm"
+                    variant={count === c ? "default" : "outline"}
+                    onClick={() => setCount(c)}
+                  >
+                    {c}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="mb-2 text-sm font-medium">Difficulty</p>
+              <div className="flex gap-2">
+                {DIFFICULTIES.map((d) => (
+                  <Button
+                    key={d}
+                    size="sm"
+                    variant={difficulty === d ? "default" : "outline"}
+                    onClick={() => setDifficulty(d)}
+                  >
+                    {d}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            <Button className="w-full" onClick={handleStart}>
+              Start Quiz
+            </Button>
+          </div>
+        ))}
     </div>
   );
 }

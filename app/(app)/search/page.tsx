@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { ThinkingWonna } from "@/components/character/ThinkingWonna";
 import { ResourceCard } from "@/components/resource/ResourceCard";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ErrorBanner } from "@/components/common/ErrorBanner";
@@ -144,14 +145,12 @@ export default function SearchPage() {
               onClick={handleResearch}
               disabled={isResearching || !query.trim()}
             >
-              {isResearching ? (
-                <span className="flex items-center gap-2">
-                  <Spinner /> Researching… this can take up to 30 seconds
-                </span>
-              ) : (
-                "Research this topic with AI"
-              )}
+              Research this topic with AI
             </Button>
+
+            {isResearching && (
+              <ThinkingWonna message="Researching this topic for you… this can take up to 30 seconds" />
+            )}
 
             {aiError && <ErrorBanner message={aiError} />}
 
