@@ -72,7 +72,7 @@ export const BADGES: BadgeDef[] = [
   {
     id: "curious_mind",
     name: "Curious Mind",
-    description: "Send 20 messages to the AI Tutor",
+    description: "Send 20 messages to WonnaAi",
     icon: MessageCircle,
     check: (s) => s.tutorMessages >= 20,
   },

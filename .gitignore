@@ -46,3 +46,10 @@ next-env.d.ts
 
 # playwright MCP test artifacts
 .playwright-mcp/
+
+# local dev server logs
+dev-server.log
+dev-server-err.log
+
+# scratch source images (not the cropped assets in public/wonna)
+/teacherwonna/

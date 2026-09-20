@@ -56,7 +56,7 @@ export default async function DashboardPage() {
         </Link>
         <Link href="/tutor">
           <Button variant="outline" className="w-full justify-start" size="lg">
-            Ask AI Tutor
+            Ask WonnaAi
           </Button>
         </Link>
         <Link href="/quiz">

@@ -70,7 +70,7 @@ export default function OnboardingPage() {
           <h1 className="text-xl font-bold">Kumusta! Ako si Teacher Wonna 👋</h1>
           <p className="text-sm text-neutral-500">
             Ako ang iyong AI study buddy dito sa WonnaLearn. Tutulungan kita mag-review gamit ang
-            AI Tutor chat, mga quiz, at mga resources — anytime, anywhere.
+            WonnaAi chat, mga quiz, at mga resources — anytime, anywhere.
           </p>
           <p className="text-sm text-neutral-500">Ready ka na ba? Simulan na natin!</p>
         </div>

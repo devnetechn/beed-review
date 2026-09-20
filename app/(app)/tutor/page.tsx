@@ -24,7 +24,7 @@ export default async function TutorPage({
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-bold">AI Tutor</h1>
+        <h1 className="text-xl font-bold">Ask WonnaAi</h1>
         {resourceId && (
           <p className="text-sm text-neutral-500">Ask about this resource.</p>
         )}
