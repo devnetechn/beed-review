@@ -12,16 +12,18 @@ import { updateCourseAndMajor } from "@/lib/profile/course";
 export function CourseMajorSection({
   currentCourseSlug,
   currentCourseName,
+  currentMajorSlug,
   currentMajorName,
 }: {
   currentCourseSlug: string | null;
   currentCourseName: string | null;
+  currentMajorSlug: string | null;
   currentMajorName: string | null;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [courseSlug, setCourseSlug] = useState<string | null>(currentCourseSlug);
-  const [majorSlug, setMajorSlug] = useState<string | null>(null);
+  const [majorSlug, setMajorSlug] = useState<string | null>(currentMajorSlug);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,7 +31,7 @@ export function CourseMajorSection({
     setOpen(next);
     if (next) {
       setCourseSlug(currentCourseSlug);
-      setMajorSlug(null);
+      setMajorSlug(currentMajorSlug);
       setError(null);
     }
   }

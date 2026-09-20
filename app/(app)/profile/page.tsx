@@ -24,7 +24,7 @@ export default async function ProfilePage() {
   const { data: profile } = await supabase
     .from("profiles")
     .select(
-      "display_name, points, current_streak, longest_streak, is_admin, courses(slug, name), majors(name)"
+      "display_name, points, current_streak, longest_streak, is_admin, courses(slug, name), majors(slug, name)"
     )
     .eq("id", user.id)
     .maybeSingle();
@@ -95,6 +95,7 @@ export default async function ProfilePage() {
       <CourseMajorSection
         currentCourseSlug={courseRow?.slug ?? null}
         currentCourseName={courseRow?.name ?? null}
+        currentMajorSlug={majorRow?.slug ?? null}
         currentMajorName={majorRow?.name ?? null}
       />
 
