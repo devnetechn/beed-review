@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { BADGES } from "@/lib/gamification/badges";
 import { SignOutButton } from "@/components/profile/SignOutButton";
 import { FeedbackButton } from "@/components/profile/FeedbackButton";
+import { CourseMajorSection } from "@/components/profile/CourseMajorSection";
 import { EmptyState } from "@/components/common/EmptyState";
 import { Flame, Lock, Inbox } from "lucide-react";
 
@@ -22,9 +23,14 @@ export default async function ProfilePage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("display_name, points, current_streak, longest_streak, is_admin")
+    .select(
+      "display_name, points, current_streak, longest_streak, is_admin, courses(slug, name), majors(name)"
+    )
     .eq("id", user.id)
     .maybeSingle();
+
+  const courseRow = Array.isArray(profile?.courses) ? profile?.courses[0] : profile?.courses;
+  const majorRow = Array.isArray(profile?.majors) ? profile?.majors[0] : profile?.majors;
 
   const { data: earnedBadges } = await supabase
     .from("user_badges")
@@ -85,6 +91,12 @@ export default async function ProfilePage() {
           </div>
         </div>
       </div>
+
+      <CourseMajorSection
+        currentCourseSlug={courseRow?.slug ?? null}
+        currentCourseName={courseRow?.name ?? null}
+        currentMajorName={majorRow?.name ?? null}
+      />
 
       <div className="space-y-3">
         <h2 className="text-sm font-medium text-neutral-500">Badges</h2>
