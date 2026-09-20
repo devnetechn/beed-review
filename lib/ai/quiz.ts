@@ -89,7 +89,18 @@ export async function generateQuiz(
       ? linkedSubject.courses[0]
       : linkedSubject.courses
     : null;
-  const courseLabel = resolveCourseLabel(linkedCourse?.slug);
+
+  let courseSlug = linkedCourse?.slug;
+  if (!courseSlug) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("courses(slug)")
+      .eq("id", userId)
+      .maybeSingle();
+    const profileCourse = Array.isArray(profile?.courses) ? profile?.courses[0] : profile?.courses;
+    courseSlug = profileCourse?.slug;
+  }
+  const courseLabel = resolveCourseLabel(courseSlug);
 
   const response = await getOpenAIClient().responses.create({
     model: process.env.OPENAI_MODEL!,
