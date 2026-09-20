@@ -25,9 +25,9 @@ export default async function TutorPage({
     <div className="space-y-4">
       <div>
         <h1 className="text-xl font-bold">AI Tutor</h1>
-        <p className="text-sm text-neutral-500">
-          {resourceId ? "Ask about this resource." : "Ask about any BEEd/LET topic."}
-        </p>
+        {resourceId && (
+          <p className="text-sm text-neutral-500">Ask about this resource.</p>
+        )}
       </div>
       <ChatThread resourceId={resourceId ?? null} resourceTitle={resourceTitle} />
     </div>
