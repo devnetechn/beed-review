@@ -105,7 +105,7 @@ function QuizPageContent() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-bold">Take a Quiz</h1>
-        <p className="text-sm text-neutral-500">Test yourself on a BEEd/LET topic.</p>
+        <p className="text-sm text-neutral-500">Test yourself on a topic from your course.</p>
       </div>
 
       {error && <ErrorBanner message={error} />}
