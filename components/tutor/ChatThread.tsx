@@ -16,8 +16,8 @@ type Message = { role: "user" | "assistant"; content: string; wantsExtremeQuiz?:
 
 const MARKDOWN_COMPONENTS: Components = {
   p: (props) => <p className="mb-2 last:mb-0" {...props} />,
-  ul: (props) => <ul className="mb-2 list-disc space-y-1 pl-4 last:mb-0" {...props} />,
-  ol: (props) => <ol className="mb-2 list-decimal space-y-1 pl-4 last:mb-0" {...props} />,
+  ul: (props) => <ul className="mb-2 list-disc space-y-2 pl-4 last:mb-0" {...props} />,
+  ol: (props) => <ol className="mb-2 list-decimal space-y-2 pl-4 last:mb-0" {...props} />,
   li: (props) => <li {...props} />,
   strong: (props) => <strong className="font-semibold" {...props} />,
   h1: (props) => <p className="mb-2 font-semibold last:mb-0" {...props} />,
