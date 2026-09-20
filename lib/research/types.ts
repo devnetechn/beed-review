@@ -17,22 +17,6 @@ export const RESOURCE_TYPE_VALUES = [
   "practice_questions",
 ] as const;
 
-export const SUBJECT_SLUGS = [
-  "assessment-of-learning",
-  "child-and-adolescent-development",
-  "principles-of-teaching",
-  "curriculum-development",
-  "educational-technology",
-  "teaching-profession",
-  "facilitating-learning",
-  "general-education",
-  "english",
-  "mathematics",
-  "science",
-  "filipino",
-  "social-studies",
-] as const;
-
 export const ResearchedResourceSchema = z.object({
   title: z.string().min(1),
   author: z.string().nullable(),
@@ -43,7 +27,7 @@ export const ResearchedResourceSchema = z.object({
   license: z.string().nullable(),
   license_status: z.enum(LICENSE_STATUS_VALUES),
   license_evidence: z.string().min(1),
-  subject_slug: z.enum(SUBJECT_SLUGS),
+  subject_slug: z.string().min(1),
   topics: z.array(z.string().min(1)).min(1).max(4),
 });
 

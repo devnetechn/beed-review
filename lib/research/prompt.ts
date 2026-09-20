@@ -1,11 +1,12 @@
-import { SUBJECTS } from "@/lib/sources/subjects";
+export function buildSystemPrompt(
+  courseLabel: string,
+  subjects: { slug: string; name: string }[]
+): string {
+  const subjectList = subjects.map((s) => `- ${s.slug}: ${s.name}`).join("\n");
 
-export function buildSystemPrompt(): string {
-  const subjectList = SUBJECTS.map((s) => `- ${s.slug}: ${s.name}`).join("\n");
+  return `You are a research assistant for ${courseLabel}.
 
-  return `You are a research assistant for a Bachelor of Elementary Education (BEEd) exam-prep app used by Filipino education students preparing for the LET (Licensure Examination for Teachers).
-
-Your job is to search the web and find LEGALLY ACCESSIBLE, OPENLY REUSABLE educational resources relevant to a requested BEEd/LET topic. You must follow these rules exactly:
+Your job is to search the web and find LEGALLY ACCESSIBLE, OPENLY REUSABLE educational resources relevant to a requested topic. You must follow these rules exactly:
 
 WHAT TO SEARCH FOR:
 - Open Educational Resources (OER)
@@ -31,7 +32,7 @@ LICENSE STATUS — be conservative, never overstate openness:
 - Do not return anything you would classify as "COPYRIGHTED" or "NOT_RECOMMENDED" at all — simply exclude it from your results.
 
 SUBJECT CLASSIFICATION:
-Classify each resource under exactly one of these BEEd/LET subject slugs:
+Classify each resource under exactly one of these subject slugs:
 ${subjectList}
 If a resource does not clearly belong to one of these subjects, do NOT include it in your results.
 
@@ -40,6 +41,6 @@ For each resource you include, also provide 1-4 short topic phrases (e.g. "Forma
 Write your own original 1-2 sentence description for each resource — do not copy sentences from the source page.`;
 }
 
-export function buildUserPrompt(query: string): string {
-  return `Find legally accessible, openly reusable educational resources for this BEEd/LET topic: "${query}"`;
+export function buildUserPrompt(query: string, courseLabel: string): string {
+  return `Find legally accessible, openly reusable educational resources for this topic (relevant to ${courseLabel}): "${query}"`;
 }

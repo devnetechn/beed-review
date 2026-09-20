@@ -3,21 +3,25 @@ import type { ResourceHit } from "@/lib/search/searchResources";
 
 const CACHE_FRESHNESS_DAYS = 30;
 
-export async function findCachedResults(query: string): Promise<ResourceHit[] | null> {
+export async function findCachedResults(
+  query: string,
+  courseId: string | null
+): Promise<ResourceHit[] | null> {
   const supabase = createServiceClient();
   const normalized = query.trim();
 
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - CACHE_FRESHNESS_DAYS);
 
-  const { data: matchingQuery } = await supabase
+  const base = supabase
     .from("research_queries")
     .select("id")
     .ilike("query_text", normalized)
-    .gte("created_at", cutoff.toISOString())
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .gte("created_at", cutoff.toISOString());
+
+  const { data: matchingQuery } = courseId
+    ? await base.eq("course_id", courseId).order("created_at", { ascending: false }).limit(1).maybeSingle()
+    : await base.is("course_id", null).order("created_at", { ascending: false }).limit(1).maybeSingle();
 
   if (!matchingQuery) return null;
 
