@@ -34,7 +34,7 @@ const REFUSAL_MESSAGES: Record<Exclude<TutorCategory, "COURSE_RELATED">, (course
   RANDOM_TRIVIA: (courseName) =>
     `That's a fun trivia question! Let's keep this chat focused on your ${courseName} materials — ask me something related to your course.`,
   OUT_OF_COURSE: (courseName) =>
-    `I can only help with topics available in your ${courseName} course materials.`,
+    `I can only help with topics available in your ${courseName} materials.`,
   UNSAFE_OR_RESTRICTED: () =>
     `I can't help with that request. Let's get back to your studies — what would you like help with?`,
   SYSTEM_OR_PROMPT_INJECTION: () =>
@@ -142,18 +142,28 @@ export async function sendTutorMessage(
 ): Promise<{ reply: string; wantsExtremeQuiz: boolean }> {
   const supabase = createServiceClient();
 
+  const { data: conversation } = await supabase
+    .from("ai_conversations")
+    .select("user_id")
+    .eq("id", conversationId)
+    .maybeSingle();
+  if (!conversation || conversation.user_id !== userId) {
+    throw new Error("Conversation not found");
+  }
+
   await supabase.from("ai_messages").insert({
     conversation_id: conversationId,
     role: "user",
     content: userMessage,
   });
 
-  const { data: history } = await supabase
+  const { data: recentHistory } = await supabase
     .from("ai_messages")
     .select("role, content")
     .eq("conversation_id", conversationId)
-    .order("created_at", { ascending: true })
+    .order("created_at", { ascending: false })
     .limit(20);
+  const history = (recentHistory ?? []).slice().reverse();
 
   const { courseLabel, courseName } = await resolveCourseContext(userId);
 
@@ -178,7 +188,7 @@ export async function sendTutorMessage(
         role: "system",
         content: buildTutorSystemPrompt(courseLabel, retrievedContext, resourceContext),
       },
-      ...((history ?? []) as ChatMessage[]).map((m) => ({ role: m.role, content: m.content })),
+      ...(history as ChatMessage[]).map((m) => ({ role: m.role, content: m.content })),
     ],
     text: {
       format: {
@@ -194,7 +204,10 @@ export async function sendTutorMessage(
   try {
     parsed = TutorReplySchema.parse(JSON.parse(response.output_text));
   } catch {
-    parsed = { category: "COURSE_RELATED", reply: response.output_text, wants_extreme_quiz: false };
+    // Never trust raw model output on a parse failure (malformed/truncated
+    // JSON, or a future schema drift) — that's the same leak this whole
+    // guard exists to prevent, just via a different door.
+    parsed = { category: "COURSE_RELATED", reply: "", wants_extreme_quiz: false };
   }
 
   let finalReply: string;

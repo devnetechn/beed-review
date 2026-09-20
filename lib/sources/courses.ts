@@ -27,6 +27,6 @@ export function resolveCourseLabel(courseSlug: string | null | undefined): strin
 }
 
 export function resolveCourseName(courseSlug: string | null | undefined): string {
-  if (!courseSlug) return COURSES[0].name;
-  return COURSES.find((c) => c.slug === courseSlug)?.name ?? COURSES[0].name;
+  if (!courseSlug) return "course";
+  return COURSES.find((c) => c.slug === courseSlug)?.name ?? "course";
 }
