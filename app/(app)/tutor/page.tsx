@@ -22,7 +22,7 @@ export default async function TutorPage({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex h-[calc(100dvh-7rem)] flex-col gap-4 md:h-[calc(100dvh-3rem)]">
       <div>
         <h1 className="text-xl font-bold">Ask WonnaAi</h1>
         {resourceId && (
