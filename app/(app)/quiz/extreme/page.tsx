@@ -22,8 +22,8 @@ export default async function ExtremeQuizPage() {
 
   return (
     <div className="space-y-4">
-      <Link href="/quiz" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-        ← Back to Quiz
+      <Link href="/tutor" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+        ← Back to Tutor
       </Link>
       <h1 className="text-xl font-bold">Extreme Quiz</h1>
       {usedToday && nextAvailableAt ? (
