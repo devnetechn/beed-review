@@ -15,16 +15,19 @@ import { startTutorConversationAction, sendTutorMessageAction } from "@/lib/ai/a
 type Message = { role: "user" | "assistant"; content: string; wantsExtremeQuiz?: boolean };
 
 const MARKDOWN_COMPONENTS: Components = {
-  p: (props) => <p className="mb-2 last:mb-0" {...props} />,
-  ul: (props) => <ul className="mb-2 list-disc space-y-2 pl-4 last:mb-0" {...props} />,
-  ol: (props) => <ol className="mb-2 list-decimal space-y-2 pl-4 last:mb-0" {...props} />,
+  p: (props) => <p className="mb-2 break-words last:mb-0" {...props} />,
+  ul: (props) => <ul className="mb-2 list-disc space-y-2 break-words pl-4 last:mb-0" {...props} />,
+  ol: (props) => <ol className="mb-2 list-decimal space-y-2 break-words pl-4 last:mb-0" {...props} />,
   li: (props) => <li {...props} />,
   strong: (props) => <strong className="font-semibold" {...props} />,
-  h1: (props) => <p className="mb-2 font-semibold last:mb-0" {...props} />,
-  h2: (props) => <p className="mb-2 font-semibold last:mb-0" {...props} />,
-  h3: (props) => <p className="mb-2 font-semibold last:mb-0" {...props} />,
-  a: (props) => <a className="underline" target="_blank" rel="noopener noreferrer" {...props} />,
-  code: (props) => <code className="rounded bg-black/10 px-1 py-0.5 text-xs" {...props} />,
+  h1: (props) => <p className="mb-2 break-words font-semibold last:mb-0" {...props} />,
+  h2: (props) => <p className="mb-2 break-words font-semibold last:mb-0" {...props} />,
+  h3: (props) => <p className="mb-2 break-words font-semibold last:mb-0" {...props} />,
+  a: (props) => <a className="break-words underline" target="_blank" rel="noopener noreferrer" {...props} />,
+  code: (props) => <code className="break-words rounded bg-black/10 px-1 py-0.5 text-xs" {...props} />,
+  pre: (props) => (
+    <pre className="mb-2 overflow-x-auto whitespace-pre-wrap break-words rounded bg-black/10 p-2 text-xs last:mb-0" {...props} />
+  ),
 };
 
 export function ChatThread({
@@ -98,7 +101,7 @@ export function ChatThread({
           Chatting about: {resourceTitle}
         </div>
       )}
-      <div className="flex-1 space-y-3 overflow-y-auto py-3">
+      <div className="flex-1 space-y-3 overflow-x-hidden overflow-y-auto py-3">
         {loading && (
           <div className="flex items-center gap-2 text-sm text-neutral-400">
             <Spinner /> Loading…
@@ -108,7 +111,7 @@ export function ChatThread({
           <div key={i} className="space-y-1.5">
             <div className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
               <div
-                className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
+                className={`max-w-[85%] break-words rounded-2xl px-3 py-2 text-sm ${
                   m.role === "user" ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-900"
                 }`}
               >

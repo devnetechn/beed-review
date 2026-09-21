@@ -1,4 +1,5 @@
 import { ChatThread } from "@/components/tutor/ChatThread";
+import { ViewportHeightFrame } from "@/components/tutor/ViewportHeightFrame";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -22,7 +23,11 @@ export default async function TutorPage({
   }
 
   return (
-    <div className="flex h-[calc(100dvh-7rem)] flex-col gap-4 md:h-[calc(100dvh-3rem)]">
+    <ViewportHeightFrame
+      mobileOffsetRem={7}
+      desktopOffsetRem={3}
+      className="flex h-[calc(100dvh-7rem)] flex-col gap-4 md:h-[calc(100dvh-3rem)]"
+    >
       <div>
         <h1 className="text-xl font-bold">Ask WonnaAi</h1>
         {resourceId && (
@@ -30,6 +35,6 @@ export default async function TutorPage({
         )}
       </div>
       <ChatThread resourceId={resourceId ?? null} resourceTitle={resourceTitle} />
-    </div>
+    </ViewportHeightFrame>
   );
 }
