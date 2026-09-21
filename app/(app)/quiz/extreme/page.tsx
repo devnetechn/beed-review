@@ -1,8 +1,10 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getExtremeQuizStatus } from "@/lib/quiz/extreme";
 import { ExtremeQuizPicker } from "@/components/quiz/ExtremeQuizPicker";
 import { ExtremeLockedState } from "@/components/quiz/ExtremeLockedState";
 import { EmptyState } from "@/components/common/EmptyState";
+import { buttonVariants } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +22,9 @@ export default async function ExtremeQuizPage() {
 
   return (
     <div className="space-y-4">
+      <Link href="/quiz" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+        ← Back to Quiz
+      </Link>
       <h1 className="text-xl font-bold">Extreme Quiz</h1>
       {usedToday && nextAvailableAt ? (
         <ExtremeLockedState nextAvailableAt={nextAvailableAt} />
