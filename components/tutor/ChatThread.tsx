@@ -25,6 +25,9 @@ const MARKDOWN_COMPONENTS: Components = {
   h3: (props) => <p className="mb-2 break-words font-semibold last:mb-0" {...props} />,
   a: (props) => <a className="break-words underline" target="_blank" rel="noopener noreferrer" {...props} />,
   code: (props) => <code className="break-words rounded bg-black/10 px-1 py-0.5 text-xs" {...props} />,
+  pre: (props) => (
+    <pre className="mb-2 overflow-x-auto whitespace-pre-wrap break-words rounded bg-black/10 p-2 text-xs last:mb-0" {...props} />
+  ),
 };
 
 export function ChatThread({
