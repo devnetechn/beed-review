@@ -85,7 +85,7 @@ export function ChatThread({
   }
 
   return (
-    <div className="flex h-[calc(100vh-12rem)] flex-col">
+    <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex items-center gap-3 border-b border-neutral-200 pb-3">
         <TeacherWonna state={sending ? "thinking" : "idle"} size="sm" />
         <div>
