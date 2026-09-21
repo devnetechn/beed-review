@@ -56,7 +56,7 @@ export async function generateQuiz(
 
   const { data: resource } = await supabase
     .from("resources")
-    .select("title, description, resource_type, license_status, original_url")
+    .select("title, description, resource_type, license_status, original_url, storage_path")
     .eq("id", resourceId)
     .single();
 

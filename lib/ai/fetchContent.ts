@@ -1,4 +1,5 @@
 import * as cheerio from "cheerio";
+import { fetchUploadedContent } from "./extractFile";
 
 const FETCH_TIMEOUT_MS = 10_000;
 const MAX_BYTES = 2_000_000;
@@ -7,12 +8,20 @@ const MAX_CHARS = 12_000;
 export type ResourceForFetch = {
   resource_type: string;
   license_status: string;
-  original_url: string;
+  original_url: string | null;
+  storage_path: string | null;
 };
 
 export async function fetchContent(resource: ResourceForFetch): Promise<string | null> {
+  if (resource.storage_path) {
+    return fetchUploadedContent({
+      resource_type: resource.resource_type,
+      storage_path: resource.storage_path,
+    });
+  }
   if (resource.resource_type === "pdf") return null;
   if (resource.license_status === "LICENSE_UNCLEAR") return null;
+  if (!resource.original_url) return null;
 
   try {
     const controller = new AbortController();
