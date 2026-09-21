@@ -1,8 +1,10 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getQuizAttempt } from "@/lib/quiz/attempt";
 import { QuizTaker } from "@/components/quiz/QuizTaker";
 import { QuizReview } from "@/components/quiz/QuizReview";
 import { EmptyState } from "@/components/common/EmptyState";
+import { buttonVariants } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +31,9 @@ export default async function QuizAttemptPage({
 
   return (
     <div className="space-y-4">
+      <Link href="/quiz" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+        ← Back to Quiz
+      </Link>
       <h1 className="text-xl font-bold">{attempt.label}</h1>
       {attempt.scored ? (
         <QuizReview

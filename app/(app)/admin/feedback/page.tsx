@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { EmptyState } from "@/components/common/EmptyState";
+import { buttonVariants } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +41,9 @@ export default async function FeedbackInboxPage() {
 
   return (
     <div className="space-y-4">
+      <Link href="/profile" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+        ← Back to Profile
+      </Link>
       <h1 className="text-xl font-bold">Feedback Inbox</h1>
 
       {rows.length === 0 ? (
