@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ThinkingWonna } from "@/components/character/ThinkingWonna";
 import { ErrorBanner } from "@/components/common/ErrorBanner";
 
-const COUNTS = [5, 10, 20, 50] as const;
+const COUNTS = [50, 150, 200] as const;
 const DIFFICULTIES = ["easy", "medium", "hard"] as const;
 
 export function QuizDialog({
@@ -18,11 +18,11 @@ export function QuizDialog({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onGenerate: (count: 5 | 10 | 20 | 50, difficulty: "easy" | "medium" | "hard") => void;
+  onGenerate: (count: 50 | 150 | 200, difficulty: "easy" | "medium" | "hard") => void;
   loading: boolean;
   error: string | null;
 }) {
-  const [count, setCount] = useState<5 | 10 | 20 | 50>(10);
+  const [count, setCount] = useState<50 | 150 | 200>(50);
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium");
 
   return (

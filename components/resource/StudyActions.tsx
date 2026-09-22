@@ -38,7 +38,7 @@ export function StudyActions({
     setSummaryContent(outcome.content);
   }
 
-  async function handleGenerateQuiz(count: 5 | 10 | 20 | 50, difficulty: "easy" | "medium" | "hard") {
+  async function handleGenerateQuiz(count: 50 | 150 | 200, difficulty: "easy" | "medium" | "hard") {
     setQuizLoading(true);
     setQuizError(null);
     const outcome = await generateQuizAction(resourceId, count, difficulty);

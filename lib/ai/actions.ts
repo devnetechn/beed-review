@@ -30,7 +30,7 @@ export async function summarizeResourceAction(
 
 export async function generateQuizAction(
   resourceId: string,
-  count: 5 | 10 | 20 | 50,
+  count: 50 | 150 | 200,
   difficulty: QuizDifficulty
 ): Promise<{ attemptId: string; questions: QuizQuestionResult[] } | { error: string }> {
   try {

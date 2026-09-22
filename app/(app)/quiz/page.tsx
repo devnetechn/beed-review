@@ -9,7 +9,7 @@ import { ErrorBanner } from "@/components/common/ErrorBanner";
 import { startTopicQuizAction, startSubjectQuizAction } from "@/lib/quiz/actions";
 
 type Topic = { id: string; name: string };
-const COUNTS = [5, 10, 20, 50] as const;
+const COUNTS = [50, 150, 200] as const;
 const DIFFICULTIES = ["easy", "medium", "hard"] as const;
 
 export default function QuizPage() {
@@ -37,7 +37,7 @@ function QuizPageContent() {
   const [topicsLoading, setTopicsLoading] = useState(false);
   const [subjectOptions, setSubjectOptions] = useState<{ slug: string; name: string }[]>([]);
   const [subjectOptionsLoading, setSubjectOptionsLoading] = useState(true);
-  const [count, setCount] = useState<5 | 10 | 20 | 50>(10);
+  const [count, setCount] = useState<50 | 150 | 200>(50);
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium");
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);

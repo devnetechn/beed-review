@@ -17,7 +17,7 @@ async function requireUser() {
 
 export async function startTopicQuizAction(
   topicId: string,
-  count: 5 | 10 | 20 | 50,
+  count: 50 | 150 | 200,
   difficulty: QuizDifficulty
 ): Promise<{ attemptId: string } | { error: string }> {
   try {
@@ -31,7 +31,7 @@ export async function startTopicQuizAction(
 
 export async function startSubjectQuizAction(
   subjectId: string,
-  count: 5 | 10 | 20 | 50,
+  count: 50 | 150 | 200,
   difficulty: QuizDifficulty
 ): Promise<{ attemptId: string } | { error: string }> {
   try {
